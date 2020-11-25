@@ -47,4 +47,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
     //gson
     implementation 'com.google.code.gson:gson:2.8.2'
+    //immersionbar
+    implementation 'com.gyf.immersionbar:immersionbar:2.3.3'
 }
