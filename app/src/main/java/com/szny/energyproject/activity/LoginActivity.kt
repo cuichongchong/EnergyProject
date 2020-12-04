@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import com.gyf.barlibrary.ImmersionBar
 import com.szny.energyproject.R
 import com.szny.energyproject.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_login.*
@@ -14,6 +15,8 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        ImmersionBar.with(this).init()
 
         initView()
         initEvent()
@@ -77,5 +80,10 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 finish()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ImmersionBar.with(this).destroy()
     }
 }

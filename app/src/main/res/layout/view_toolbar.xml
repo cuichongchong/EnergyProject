@@ -4,7 +4,9 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="44dp"
-    app:title="">
+    android:minHeight="44dp"
+    android:background="@color/colorWhite"
+    android:title="">
 
     <TextView
         android:id="@+id/toolbar_title"
@@ -13,7 +15,7 @@
         android:layout_gravity="center"
         android:ellipsize="end"
         android:lines="1"
-        android:textColor="@color/colorWhite"
-        android:textSize="18sp" />
+        android:textColor="@color/color_111111"
+        android:textSize="17sp" />
 
 </androidx.appcompat.widget.Toolbar>

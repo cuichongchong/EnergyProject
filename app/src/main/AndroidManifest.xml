@@ -11,28 +11,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity
-            android:name=".activity.LoginActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppSplash">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".activity.HomeActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name=".activity.ControllerActivity"
-            android:screenOrientation="portrait"/>
-
         <!-- 适配全面屏 -->
         <meta-data
             android:name="android.max_aspect"
@@ -45,6 +23,28 @@
         <meta-data
             android:name="notch.config"
             android:value="portrait|landscape" />
+
+        <activity
+            android:name=".activity.LoginActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppSplash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.HomeActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.ControllerActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.DataActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
