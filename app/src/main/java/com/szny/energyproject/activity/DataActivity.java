@@ -91,6 +91,9 @@ public class DataActivity extends BaseActivity implements View.OnClickListener {
             float val1 = (float) (Math.random() * mult) + mult / 3;
             float val2 = (float) (Math.random() * mult) + mult / 3;
             float val3 = (float) (Math.random() * mult) + mult / 3;
+            /*float val1 = 0f;
+            float val2 = 0f;
+            float val3 = 0f;*/
             float val4 = (float) (Math.random() * mult) + mult / 3;
             yVals.add(new BarEntry(i+1, new float[]{val1, val2, val3, val4}));
         }

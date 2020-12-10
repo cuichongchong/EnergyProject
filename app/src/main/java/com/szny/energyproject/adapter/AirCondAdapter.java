@@ -105,7 +105,7 @@ public class AirCondAdapter extends BaseRecyclerViewAdapter<AirCondEntity> {
         //空调开关监听
         setSwitch.setOnClickListener(view -> {
             if(!isGate){
-                ToastUtils.showShort(context,"请先将空调合闸");
+                ToastUtils.showShort(context,"请先将空调总闸合闸");
             }
         });
         setSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {

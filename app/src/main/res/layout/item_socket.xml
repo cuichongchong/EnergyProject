@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:background="@drawable/white_shape">
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="云插座1"
+        android:textSize="16sp"
+        android:textColor="@color/color_333333"/>
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center">
+        <TextView
+            android:id="@+id/tv_socket"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp"
+            android:text="分闸"
+            android:textSize="16sp"
+            android:textColor="@color/color_1790FF"/>
+        <ImageView
+            android:id="@+id/iv_socket"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/ic_switch_close"
+            android:layout_marginStart="5dp"
+            android:layout_toEndOf="@+id/tv_socket"/>
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="工作中"
+        android:textSize="16sp"
+        android:textColor="@color/color_1790FF"/>
+
+</LinearLayout>

@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,10 +16,12 @@ import com.gyf.barlibrary.ImmersionBar
 import com.szny.energyproject.R
 import com.szny.energyproject.adapter.AirCondAdapter
 import com.szny.energyproject.adapter.ElectricAdapter
+import com.szny.energyproject.adapter.SocketAdapter
 import com.szny.energyproject.base.BaseActivity
 import com.szny.energyproject.base.RecyclerViewDivider
 import com.szny.energyproject.entity.AirCondEntity
 import com.szny.energyproject.entity.ElectricEntity
+import com.szny.energyproject.entity.SocketEntity
 import com.szny.energyproject.utils.DensityUtil
 import com.szny.energyproject.utils.ToastUtils
 import com.szny.energyproject.widget.CommonDialog
@@ -29,7 +30,7 @@ import kotlinx.android.synthetic.main.activity_controller.*
 /**
  * 控制管理页面
  * */
-class ControllerActivity : BaseActivity(), View.OnClickListener,CompoundButton.OnCheckedChangeListener{
+class ControllerActivity : BaseActivity(), View.OnClickListener{
 
     private lateinit var electricAdapter:ElectricAdapter
     private lateinit var electricList:MutableList<ElectricEntity.ElectricListBean>
@@ -37,14 +38,23 @@ class ControllerActivity : BaseActivity(), View.OnClickListener,CompoundButton.O
     private lateinit var airCondAdapter:AirCondAdapter
     private lateinit var airCondList:MutableList<AirCondEntity>
 
+    private lateinit var socketAdapter:SocketAdapter
+    private lateinit var socketList:MutableList<SocketEntity>
+
     private var dialog: CommonDialog? = null
 
     //房间选择器
     private var mRoomList = arrayListOf<String>()
     private var mRoomPickerView: OptionsPickerView<*>? = null
 
-    //模拟空调开关状态
+    //初始化空调开关状态
     private var isAirOpen = false
+    //初始化照明开关状态
+    private var isBulbOpen = false
+    //初始化插座开关状态
+    private var isSocketOpen = false
+    //初始化商铺总开关状态,只有商品角色进来时才有
+    private var isShopOpen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,13 +82,14 @@ class ControllerActivity : BaseActivity(), View.OnClickListener,CompoundButton.O
         tv_more.setOnClickListener(this)
         tv_name.setOnClickListener(this)
         iv_change.setOnClickListener(this)
-        set_bulb.setOnCheckedChangeListener(this)
-        set_socket.setOnCheckedChangeListener(this)
-        set_air.setOnCheckedChangeListener(this)
+        iv_bulb.setOnClickListener(this)
+        iv_socket.setOnClickListener(this)
+        iv_air.setOnClickListener(this)
+        iv_master.setOnClickListener(this)
     }
 
     private fun initData() {
-        //添加电量模拟数据
+        //电量模拟数据
         electricList = ArrayList<ElectricEntity.ElectricListBean>()
         electricList.add(ElectricEntity.ElectricListBean("今日电量(度)","1.0"))
         electricList.add(ElectricEntity.ElectricListBean("当月电量(度)","2.0"))
@@ -101,6 +112,17 @@ class ControllerActivity : BaseActivity(), View.OnClickListener,CompoundButton.O
         divider.setColor(R.color.color_f5f5f5)
         rv_air_conditioner.addItemDecoration(divider)
         rv_air_conditioner.adapter = airCondAdapter
+
+        //插座模拟数据
+        socketList = ArrayList<SocketEntity>()
+        socketList.add(SocketEntity("云插座1",false,"停止中"))
+        socketList.add(SocketEntity("云插座2",false,"停止中"))
+        socketList.add(SocketEntity("云插座3",false,"停止中"))
+
+        socketAdapter = SocketAdapter(mContext,socketList,isSocketOpen)
+        rv_socket.layoutManager = LinearLayoutManager(mContext)
+        rv_socket.addItemDecoration(divider)
+        rv_socket.adapter = socketAdapter
 
         setUpListener()
 
@@ -130,47 +152,37 @@ class ControllerActivity : BaseActivity(), View.OnClickListener,CompoundButton.O
                 startActivity(Intent(this,
                     DataActivity::class.java))
             }
-        }
-    }
-
-    override fun onCheckedChanged(v: CompoundButton, b: Boolean) {
-        when(v.id){
-            //照明开关切换
-            R.id.set_bulb ->{
-                if(b){
-                    tv_bulb.text = "合闸"
+            //照明总闸开关切换
+            R.id.iv_bulb ->{
+                if(isBulbOpen){
+                    sureDialog("照明总闸是否确认分闸?",1,true)
                 }else{
-                    tv_bulb.text = "分闸"
-                    tv_bulb_status.text = "灯熄"
+                    sureDialog("照明总闸是否确认合闸?",1,false)
                 }
             }
-            //插座开关切换
-            R.id.set_socket ->{
-                if(b){
-                    tv_socket.text = "合闸"
+            //插座总闸开关切换
+            R.id.iv_socket ->{
+                if(isSocketOpen){
+                    sureDialog("插座总闸是否确认分闸?",2,true)
                 }else{
-                    tv_socket.text = "分闸"
-                    tv_socket_status.text = "待机中"
+                    sureDialog("插座总闸是否确认合闸?",2,false)
                 }
             }
-            //空调开关切换
-            R.id.set_air ->{
-                //改变空调总开关在adapter状态
-                isAirOpen = b
-                airCondAdapter.isGate = b
-
-                if(b){
-                    tv_air.text = "合闸"
+            //空调总闸开关切换
+            R.id.iv_air ->{
+                if(isAirOpen){
+                    sureDialog("空调总闸是否确认分闸?",3,true)
                 }else{
-                    tv_air.text = "分闸"
-                    //修改每一个空调的开关状态
-                    airCondAdapter.data.forEach {
-                        if(it.isOpen){
-                            it.isOpen = false
-                        }
-                    }
+                    sureDialog("空调总闸是否确认合闸?",3,false)
                 }
-                airCondAdapter.notifyDataSetChanged()
+            }
+            //商铺总闸开关切换
+            R.id.iv_master ->{
+                if(isShopOpen){
+                    sureDialog("入户总闸是否确认分闸?",4,true)
+                }else{
+                    sureDialog("入户总闸是否确认合闸?",4,false)
+                }
             }
         }
     }
@@ -228,6 +240,127 @@ class ControllerActivity : BaseActivity(), View.OnClickListener,CompoundButton.O
             }
             airCondAdapter.notifyDataSetChanged()
         }
+
+        //插座适配器的点击事件
+        socketAdapter.setOnItemsClickListener { v, position ->
+            val entity = socketAdapter.data[position]
+            when(v.id){
+                R.id.iv_socket ->{
+                    if(entity.isOpen){
+                        //进行分闸
+                        entity.isOpen = false
+                        entity.statue = "停止中"
+                    }else{
+                        //进行合闸
+                        entity.isOpen = true
+                        entity.statue = "工作中"
+                    }
+                    socketAdapter.notifyDataSetChanged()
+                }
+            }
+        }
+    }
+
+    //照明、插座、空调总闸确认弹框操作
+    private fun sureDialog(title:String,type:Int,isOpen:Boolean){
+        if (dialog == null) {
+            dialog = CommonDialog(mContext)
+        }
+        dialog!!.setMessage(title)
+            .setTitle("提示")
+            .setSingle(false)
+            .setPositive("确认")
+            .setNegtive("取消")
+            .setOnClickBottomListener(object : CommonDialog.OnClickBottomListener {
+                override fun onPositiveClick() {
+                    dialog!!.dismiss()
+                    when(type){
+                        //表示照明总闸确认
+                        1 ->{
+                            if(isOpen){
+                                isBulbOpen = false
+                                iv_bulb.setBackgroundResource(R.mipmap.ic_switch_close)
+                                tv_bulb.text = "分闸"
+                                tv_bulb_status.text = "灯熄"
+                            }else{
+                                isBulbOpen = true
+                                iv_bulb.setBackgroundResource(R.mipmap.ic_switch_open)
+                                tv_bulb.text = "合闸"
+                            }
+                        }
+                        //表示插座总闸确认
+                        2 ->{
+                            if(isOpen){
+                                isSocketOpen = false
+                                iv_socket.setBackgroundResource(R.mipmap.ic_switch_close)
+                                tv_socket.text = "分闸"
+                                tv_socket_status.text = "待机中"
+
+                                //修改插座列表中总闸状态
+                                socketAdapter.isGate = false
+                                //修改每一个插座的开关状态
+                                socketAdapter.data.forEach {
+                                    if(it.isOpen){
+                                        it.isOpen = false
+                                        it.statue = "停止中"
+                                    }
+                                }
+                            }else{
+                                isSocketOpen = true
+                                iv_socket.setBackgroundResource(R.mipmap.ic_switch_open)
+                                tv_socket.text = "合闸"
+
+                                //修改插座列表中总闸状态
+                                socketAdapter.isGate = true
+                            }
+                            socketAdapter.notifyDataSetChanged()
+                        }
+                        //表示空调总闸确认
+                        3 ->{
+                            if(isOpen){
+                                isAirOpen = false
+                                iv_air.setBackgroundResource(R.mipmap.ic_switch_close)
+                                tv_air.text = "分闸"
+
+                                //修改空调列表中总闸状态
+                                airCondAdapter.isGate = false
+                                //修改每一个空调的开关状态
+                                airCondAdapter.data.forEach {
+                                    if(it.isOpen){
+                                        it.isOpen = false
+                                    }
+                                }
+                            }else{
+                                isAirOpen = true
+                                iv_air.setBackgroundResource(R.mipmap.ic_switch_open)
+                                tv_air.text = "合闸"
+
+                                //修改空调列表中总闸状态
+                                airCondAdapter.isGate = true
+                            }
+                            airCondAdapter.notifyDataSetChanged()
+                        }
+                        //表示入户总闸确认
+                        4 ->{
+                            if(isOpen){
+                                isShopOpen = false
+                                iv_master.setBackgroundResource(R.mipmap.ic_switch_close)
+                                tv_master.text = "分闸"
+                            }else{
+                                isShopOpen = true
+                                iv_master.setBackgroundResource(R.mipmap.ic_switch_open)
+                                tv_master.text = "合闸"
+                            }
+                        }
+                    }
+
+                }
+
+                override fun onNegtiveClick() {
+                    dialog!!.dismiss()
+                }
+            })
+            .show()
     }
 
     //初始化房间选择器
