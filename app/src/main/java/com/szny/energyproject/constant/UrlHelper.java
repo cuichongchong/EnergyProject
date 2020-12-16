@@ -2,7 +2,7 @@ package com.szny.energyproject.constant;
 
 public class UrlHelper {
     //测试环境
-    private static String BASE_IP = "116.62.147.172:8007";
+    private static String BASE_IP = "172.10.11.33:8000";
     //预发环境
     //private static String BASE_IP = "pre.qinziezhan.com";
     //正式环境

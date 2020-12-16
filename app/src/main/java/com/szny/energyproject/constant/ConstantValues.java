@@ -5,5 +5,6 @@ package com.szny.energyproject.constant;
  * */
 public class ConstantValues {
     //Preference里面的键值
+    public static final String LOGIN_SUCCESS = "login_success";
     public static final String TOKEN = "token";
 }

@@ -2,7 +2,6 @@ package com.szny.energyproject.mvp;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import io.reactivex.disposables.Disposable;
 
 public class BasePresenter<T extends IBaseView> {

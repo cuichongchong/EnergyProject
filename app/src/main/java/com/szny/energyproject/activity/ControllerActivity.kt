@@ -19,18 +19,22 @@ import com.szny.energyproject.adapter.ElectricAdapter
 import com.szny.energyproject.adapter.SocketAdapter
 import com.szny.energyproject.base.BaseActivity
 import com.szny.energyproject.base.RecyclerViewDivider
-import com.szny.energyproject.entity.AirCondEntity
-import com.szny.energyproject.entity.ElectricEntity
-import com.szny.energyproject.entity.SocketEntity
+import com.szny.energyproject.constant.ConstantValues
+import com.szny.energyproject.entity.*
+import com.szny.energyproject.mvp.iviews.ILoginView
+import com.szny.energyproject.mvp.persenters.LoginPresenter
 import com.szny.energyproject.utils.DensityUtil
+import com.szny.energyproject.utils.LogUtils
+import com.szny.energyproject.utils.SPUtils
 import com.szny.energyproject.utils.ToastUtils
 import com.szny.energyproject.widget.CommonDialog
+import com.szny.energyproject.widget.SignalRManager
 import kotlinx.android.synthetic.main.activity_controller.*
 
 /**
  * 控制管理页面
  * */
-class ControllerActivity : BaseActivity(), View.OnClickListener{
+class ControllerActivity : BaseActivity(), View.OnClickListener, ILoginView {
 
     private lateinit var electricAdapter:ElectricAdapter
     private lateinit var electricList:MutableList<ElectricEntity.ElectricListBean>
@@ -56,6 +60,8 @@ class ControllerActivity : BaseActivity(), View.OnClickListener{
     //初始化商铺总开关状态,只有商品角色进来时才有
     private var isShopOpen = false
 
+    private lateinit var presenter: LoginPresenter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_controller)
@@ -75,6 +81,9 @@ class ControllerActivity : BaseActivity(), View.OnClickListener{
             tbLinearParams.height = DensityUtil.dip2px(this, 69f)// 控件的高
             toolbar.layoutParams = tbLinearParams //使设置好的布局参数应用到控件
         }
+
+        presenter = LoginPresenter()
+        presenter.attachView(this)
     }
 
     private fun initEvent() {
@@ -89,6 +98,20 @@ class ControllerActivity : BaseActivity(), View.OnClickListener{
     }
 
     private fun initData() {
+
+        //测试发送signalR
+        try {
+            SignalRManager.getInstance().hubConnection.send("Test", "410105A00101",1,"测试发送连接")
+            LogUtils.e("doing","SignalR 发送成功")
+        } catch (e: Exception) {
+            LogUtils.e("doing","SignalR 发送失败")
+        }
+
+        //测试监听接收signalR
+        SignalRManager.getInstance().setIcallBack {
+            LogUtils.e("doing", "SignalR 接收成功 $it")
+        }
+
         //电量模拟数据
         electricList = ArrayList<ElectricEntity.ElectricListBean>()
         electricList.add(ElectricEntity.ElectricListBean("今日电量(度)","1.0"))
@@ -426,6 +449,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener{
             .setOnClickBottomListener(object : CommonDialog.OnClickBottomListener {
                 override fun onPositiveClick() {
                     dialog!!.dismiss()
+                    presenter.logout(SPUtils.getInstance().getString(ConstantValues.TOKEN,""))
                 }
 
                 override fun onNegtiveClick() {
@@ -433,6 +457,26 @@ class ControllerActivity : BaseActivity(), View.OnClickListener{
                 }
             })
             .show()
+    }
+
+    //退出登录成功
+    override fun logout(data: LogoutEntity) {
+        //清除登录状态和token缓存
+        SPUtils.getInstance().remove(ConstantValues.LOGIN_SUCCESS)
+        SPUtils.getInstance().remove(ConstantValues.TOKEN)
+        //返回登录页面
+        startActivity(Intent(mContext,LoginActivity::class.java))
+        //关闭当前页面
+        this.finish()
+    }
+
+    override fun failed(e: Throwable) {
+        ToastUtils.showShort(mContext,"退出登录失败")
+    }
+
+    override fun success(t: LoginEntity) {
+    }
+    override fun refreshToken(data: LoginEntity) {
     }
 
     /**
@@ -458,7 +502,9 @@ class ControllerActivity : BaseActivity(), View.OnClickListener{
     }
 
     override fun onDestroy() {
+        presenter.detachView()
         super.onDestroy()
         ImmersionBar.with(this).destroy()
+        SignalRManager.getInstance().close()
     }
 }

@@ -3,10 +3,13 @@ package com.szny.energyproject.internet;
 import com.google.gson.Gson;
 import com.szny.energyproject.constant.ConstantValues;
 import com.szny.energyproject.constant.UrlHelper;
+import com.szny.energyproject.entity.LogoutEntity;
+import com.szny.energyproject.entity.LoginEntity;
 import com.szny.energyproject.utils.SPUtils;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import io.reactivex.Observable;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -15,6 +18,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 /**
  *
@@ -82,6 +90,20 @@ public class RetrofitManager {
     }
 
     public interface InternetService{
+
+        //登录
+        @FormUrlEncoded
+        @POST("oauth/token")
+        Observable<LoginEntity> login(@FieldMap Map<String, Object> map);
+
+        //刷新access_token
+        @FormUrlEncoded
+        @POST("oauth/token")
+        Observable<LoginEntity> refreshToken(@FieldMap Map<String, Object> map);
+
+        //退出登录
+        @GET("revokeAndroid")
+        Observable<LogoutEntity> logout(@Query("access_token")String access_token);
     }
 
 }
