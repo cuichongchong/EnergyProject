@@ -18,32 +18,34 @@ public class SignalRManager {
     }
 
     private SignalRManager(){
-        try {
-            //初始化
-            String SIGNSLR_URL = "http://192.168.0.9:49315/collector";
-            hubConnection = HubConnectionBuilder.create(SIGNSLR_URL)
-                    .withAccessTokenProvider(Single.defer(() -> {
-                        // Your logic here.
-                        return Single.just(SPUtils.getInstance().getString(ConstantValues.TOKEN,""));
-                    }))
-                    .build();
+        new Thread(() -> {
+            try {
+                //初始化
+                String SIGNSLR_URL = "http://192.168.0.9:49315/collector";
+                hubConnection = HubConnectionBuilder.create(SIGNSLR_URL)
+                        .withAccessTokenProvider(Single.defer(() -> {
+                            // Your logic here.
+                            return Single.just(SPUtils.getInstance().getString(ConstantValues.TOKEN,""));
+                        }))
+                        .build();
 
-            //关闭
-            hubConnection.onClosed(exception -> {
-                close();
-            });
+                //关闭
+                hubConnection.onClosed(exception -> {
+                    close();
+                });
 
-            //注册接收方法
-            hubConnection.on("TransferMessage", (message) -> {
-                //将结果监听回调出去
-                icallBack.receiver(message);
-            }, SupconMessage.class);
+                //注册接收方法
+                hubConnection.on("TransferMessage", (message) -> {
+                    //将结果监听回调出去
+                    icallBack.receiver(message);
+                }, SupconMessage.class);
 
-            //开启连接
-            hubConnection.start().blockingAwait();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                //开启连接
+                hubConnection.start().blockingAwait();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public static SignalRManager getInstance(){

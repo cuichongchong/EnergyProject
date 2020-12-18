@@ -1,7 +1,6 @@
 package com.szny.energyproject.mvp.models;
 
 import com.szny.energyproject.entity.LoginEntity;
-import com.szny.energyproject.entity.LogoutEntity;
 import com.szny.energyproject.internet.RetrofitManager;
 import com.szny.energyproject.mvp.BaseModel;
 import java.util.HashMap;
@@ -33,8 +32,4 @@ public class LoginModel extends BaseModel {
         return RetrofitManager.getInstance().getInternetService().login(params);
     }
 
-    //退出登录
-    public Observable<LogoutEntity> logout(String access_token) {
-        return RetrofitManager.getInstance().getInternetService().logout(access_token);
-    }
 }

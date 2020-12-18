@@ -7,6 +7,7 @@
 
     <color name="divider_color">#88c7c7cc</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorTransparent">#00000000</color>
 
     <color name="color_111111">#111111</color>
     <color name="color_333333">#333333</color>

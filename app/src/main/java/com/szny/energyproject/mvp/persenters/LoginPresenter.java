@@ -1,7 +1,6 @@
 package com.szny.energyproject.mvp.persenters;
 
 import com.szny.energyproject.mvp.BasePresenter;
-import com.szny.energyproject.mvp.exceptions.BaseException;
 import com.szny.energyproject.mvp.iviews.ILoginView;
 import com.szny.energyproject.mvp.models.LoginModel;
 import com.szny.energyproject.utils.LogUtils;
@@ -50,26 +49,4 @@ public class LoginPresenter extends BasePresenter<ILoginView> {
         disposables.add(disposable);
     }
 
-    //退出登录
-    public void logout(String access_token) {
-        Disposable disposable = loginModel.logout(access_token)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(baseEntity -> {
-                    if(baseView != null){
-                        if(200 == baseEntity.getCode()){
-                            LogUtils.e("doing","退出登录成功 "+baseEntity.getMsg());
-                            baseView.logout(baseEntity);
-                        }else{
-                            LogUtils.e("doing","退出登录失败 "+baseEntity.getCode()+"  "+baseEntity.getMsg());
-                            baseView.failed(new BaseException(baseEntity.getMsg(),String.valueOf(baseEntity.getCode())));
-                        }
-                    }
-                }, throwable -> {
-                    if (baseView != null) {
-                        baseView.failed(throwable);
-                    }
-                });
-        disposables.add(disposable);
-    }
 }

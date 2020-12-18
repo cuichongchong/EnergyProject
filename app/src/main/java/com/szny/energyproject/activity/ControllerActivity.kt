@@ -21,8 +21,9 @@ import com.szny.energyproject.base.BaseActivity
 import com.szny.energyproject.base.RecyclerViewDivider
 import com.szny.energyproject.constant.ConstantValues
 import com.szny.energyproject.entity.*
-import com.szny.energyproject.mvp.iviews.ILoginView
-import com.szny.energyproject.mvp.persenters.LoginPresenter
+import com.szny.energyproject.mvp.exceptions.BaseException
+import com.szny.energyproject.mvp.iviews.IControlView
+import com.szny.energyproject.mvp.persenters.ControlPresenter
 import com.szny.energyproject.utils.DensityUtil
 import com.szny.energyproject.utils.LogUtils
 import com.szny.energyproject.utils.SPUtils
@@ -34,7 +35,7 @@ import kotlinx.android.synthetic.main.activity_controller.*
 /**
  * 控制管理页面
  * */
-class ControllerActivity : BaseActivity(), View.OnClickListener, ILoginView {
+class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
 
     private lateinit var electricAdapter:ElectricAdapter
     private lateinit var electricList:MutableList<ElectricEntity.ElectricListBean>
@@ -60,7 +61,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, ILoginView {
     //初始化商铺总开关状态,只有商品角色进来时才有
     private var isShopOpen = false
 
-    private lateinit var presenter: LoginPresenter
+    private lateinit var presenter: ControlPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +83,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, ILoginView {
             toolbar.layoutParams = tbLinearParams //使设置好的布局参数应用到控件
         }
 
-        presenter = LoginPresenter()
+        presenter = ControlPresenter()
         presenter.attachView(this)
     }
 
@@ -98,18 +99,20 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, ILoginView {
     }
 
     private fun initData() {
+        //获取用户信息
+        presenter.userInfo()
 
-        //测试发送signalR
         try {
+            //测试发送signalR
             SignalRManager.getInstance().hubConnection.send("Test", "410105A00101",1,"测试发送连接")
             LogUtils.e("doing","SignalR 发送成功")
-        } catch (e: Exception) {
-            LogUtils.e("doing","SignalR 发送失败")
-        }
 
-        //测试监听接收signalR
-        SignalRManager.getInstance().setIcallBack {
-            LogUtils.e("doing", "SignalR 接收成功 $it")
+            //测试监听接收signalR
+            SignalRManager.getInstance().setIcallBack {
+                LogUtils.e("doing", "SignalR 接收成功 $it")
+            }
+        } catch (e: Exception) {
+            LogUtils.e("doing","SignalR 失败")
         }
 
         //电量模拟数据
@@ -386,6 +389,32 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, ILoginView {
             .show()
     }
 
+    //获取用户信息成功返回
+    override fun success(t: UserEntity) {
+        //设置用户名
+        tv_name.text = t.userName
+    }
+
+    //退出登录成功
+    override fun logout(data: LogoutEntity) {
+        //清除登录状态和token缓存
+        SPUtils.getInstance().remove(ConstantValues.LOGIN_SUCCESS)
+        SPUtils.getInstance().remove(ConstantValues.TOKEN)
+        //返回登录页面
+        startActivity(Intent(mContext,LoginActivity::class.java))
+        //关闭当前页面
+        this.finish()
+    }
+
+    override fun failed(e: Throwable) {
+        //token失效，返回登录页面
+        if(e is BaseException && e.errCode == 113){
+            ToastUtils.showShort(mContext,"验证失效,请重新登录")
+        }else{
+            ToastUtils.showShort(mContext,"请求失败")
+        }
+    }
+
     //初始化房间选择器
     private fun initRoomOptionPicker() {
         mRoomPickerView = OptionsPickerBuilder(this,
@@ -457,26 +486,6 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, ILoginView {
                 }
             })
             .show()
-    }
-
-    //退出登录成功
-    override fun logout(data: LogoutEntity) {
-        //清除登录状态和token缓存
-        SPUtils.getInstance().remove(ConstantValues.LOGIN_SUCCESS)
-        SPUtils.getInstance().remove(ConstantValues.TOKEN)
-        //返回登录页面
-        startActivity(Intent(mContext,LoginActivity::class.java))
-        //关闭当前页面
-        this.finish()
-    }
-
-    override fun failed(e: Throwable) {
-        ToastUtils.showShort(mContext,"退出登录失败")
-    }
-
-    override fun success(t: LoginEntity) {
-    }
-    override fun refreshToken(data: LoginEntity) {
     }
 
     /**

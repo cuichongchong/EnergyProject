@@ -5,16 +5,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.gyf.barlibrary.ImmersionBar;
 import com.szny.energyproject.R;
+import com.szny.energyproject.widget.Loading;
 
 public abstract class BaseActivity extends AppCompatActivity {
     protected final String TAG = getClass().getSimpleName();
     public Context mContext;
     public LayoutInflater layoutInflater;
+    private Loading loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +30,21 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    public void showLoading(){
+        if(loading == null) {
+            loading = new Loading(mContext, R.style.MyDialog);
+        }
+        if(!loading.isShowing()){
+            loading.show();
+        }
+    }
+
+    public void hideLoading(){
+        if(loading != null && loading.isShowing()){
+            loading.dismiss();
+        }
     }
 
     @Override

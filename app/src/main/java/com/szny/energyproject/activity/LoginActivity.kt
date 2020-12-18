@@ -51,6 +51,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener,ILoginView {
                     ToastUtils.showShort(this, "账号或密码不能为空")
                 }else{
                     presenter.login(username, password)
+                    showLoading()
                 }
             }
         }
@@ -58,6 +59,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener,ILoginView {
 
     //登录成功返回
     override fun success(loginEntity: LoginEntity) {
+        hideLoading()
         //记录登录成功的状态
         SPUtils.getInstance().saveBoolean(ConstantValues.LOGIN_SUCCESS, true)
         //记录返回的token，请求头中使用
@@ -70,12 +72,11 @@ class LoginActivity : BaseActivity(), View.OnClickListener,ILoginView {
 
     //登录失败返回
     override fun failed(e: Throwable?) {
+        hideLoading()
         ToastUtils.showShort(mContext,"登录失败")
     }
 
     override fun refreshToken(data: LoginEntity) {
-    }
-    override fun logout(data: LogoutEntity) {
     }
 
     private fun initEvent() {

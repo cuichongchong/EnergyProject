@@ -1,10 +1,12 @@
 package com.szny.energyproject.internet;
 
 import com.google.gson.Gson;
+import com.szny.energyproject.base.BaseEntity;
 import com.szny.energyproject.constant.ConstantValues;
 import com.szny.energyproject.constant.UrlHelper;
 import com.szny.energyproject.entity.LogoutEntity;
 import com.szny.energyproject.entity.LoginEntity;
+import com.szny.energyproject.entity.UserEntity;
 import com.szny.energyproject.utils.SPUtils;
 import java.io.IOException;
 import java.util.Map;
@@ -64,7 +66,7 @@ public class RetrofitManager {
                         @Override
                         public Response intercept(Chain chain) throws IOException {
                             Request.Builder builder = chain.request().newBuilder();
-                            builder.addHeader("Authorization", "bearer "+ SPUtils.getInstance().getString(ConstantValues.TOKEN,""));
+                            builder.addHeader("Authorization", "Bearer "+ SPUtils.getInstance().getString(ConstantValues.TOKEN,""));
                             return chain.proceed(builder.build());
                         }
                     })
@@ -104,6 +106,10 @@ public class RetrofitManager {
         //退出登录
         @GET("revokeAndroid")
         Observable<LogoutEntity> logout(@Query("access_token")String access_token);
+
+        //获取用户信息
+        @GET("http://172.10.11.33:6661/api/systematic/user/info")
+        Observable<BaseEntity<UserEntity>> userInfo();
     }
 
 }
