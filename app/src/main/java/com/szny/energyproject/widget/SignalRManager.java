@@ -21,7 +21,7 @@ public class SignalRManager {
         new Thread(() -> {
             try {
                 //初始化
-                String SIGNSLR_URL = "http://192.168.0.9:49315/collector";
+                String SIGNSLR_URL = "http://172.10.11.66:49315/collector";
                 hubConnection = HubConnectionBuilder.create(SIGNSLR_URL)
                         .withAccessTokenProvider(Single.defer(() -> {
                             // Your logic here.

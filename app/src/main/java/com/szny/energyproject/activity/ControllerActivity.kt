@@ -38,19 +38,18 @@ import kotlinx.android.synthetic.main.activity_controller.*
 class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
 
     private lateinit var electricAdapter:ElectricAdapter
-    private lateinit var electricList:MutableList<ElectricEntity.ElectricListBean>
+    private lateinit var electricList:MutableList<ElectricEntity>
 
     private lateinit var airCondAdapter:AirCondAdapter
-    private lateinit var airCondList:MutableList<AirCondEntity>
 
     private lateinit var socketAdapter:SocketAdapter
-    private lateinit var socketList:MutableList<SocketEntity>
 
     private var dialog: CommonDialog? = null
 
     //房间选择器
     private var mRoomList = arrayListOf<String>()
     private var mRoomPickerView: OptionsPickerView<*>? = null
+    private var roomId = 0
 
     //初始化空调开关状态
     private var isAirOpen = false
@@ -60,6 +59,27 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
     private var isSocketOpen = false
     //初始化商铺总开关状态,只有商品角色进来时才有
     private var isShopOpen = false
+
+    //用户信息实体
+    private lateinit var userEntity:UserEntity
+    //房间列表实体
+    private lateinit var roomList:MutableList<RoomEntity>
+
+    //空调总闸实体
+    private lateinit var airGateList:MutableList<ControlEntity.DeviceListBean>
+    private lateinit var airGateEntity:ControlEntity.DeviceListBean
+    //空调列表
+    private lateinit var airList: MutableList<ControlEntity.DeviceListBean>
+
+    //插座总闸实体
+    private lateinit var socketGateList:MutableList<ControlEntity.DeviceListBean>
+    private lateinit var socketGateEntity:ControlEntity.DeviceListBean
+    //插座列表
+    private lateinit var socketList:MutableList<ControlEntity.DeviceListBean>
+
+    //照明总闸实体
+    private lateinit var bulbGateList:MutableList<ControlEntity.DeviceListBean>
+    private lateinit var bulbGateEntity:ControlEntity.DeviceListBean
 
     private lateinit var presenter: ControlPresenter
 
@@ -104,7 +124,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
 
         try {
             //测试发送signalR
-            SignalRManager.getInstance().hubConnection.send("Test", "410105A00101",1,"测试发送连接")
+            SignalRManager.getInstance().hubConnection.send("QueryData", "410105A00199",1)
             LogUtils.e("doing","SignalR 发送成功")
 
             //测试监听接收signalR
@@ -115,23 +135,15 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
             LogUtils.e("doing","SignalR 失败")
         }
 
-        //电量模拟数据
-        electricList = ArrayList<ElectricEntity.ElectricListBean>()
-        electricList.add(ElectricEntity.ElectricListBean("今日电量(度)","1.0"))
-        electricList.add(ElectricEntity.ElectricListBean("当月电量(度)","2.0"))
-        electricList.add(ElectricEntity.ElectricListBean("当前功率(kw)","3.0"))
-
+        //电量列表
+        electricList = arrayListOf()
         electricAdapter = ElectricAdapter(electricList)
         rv_electric.layoutManager = GridLayoutManager(mContext, 3)
         rv_electric.adapter = electricAdapter
 
-        //空调模拟数据
-        airCondList = ArrayList<AirCondEntity>()
-        airCondList.add(AirCondEntity("办公室格力空调",24,24,true,false,2,false))
-        airCondList.add(AirCondEntity("办公室美的空调",26,26,false,true,3,false))
-        //airCondList.add(AirCondEntity("办公室三菱空调",22))
-
-        airCondAdapter = AirCondAdapter(mContext,airCondList,isAirOpen)
+        //空调列表
+        airList = arrayListOf()
+        airCondAdapter = AirCondAdapter(mContext,airList,isAirOpen)
         rv_air_conditioner.layoutManager = LinearLayoutManager(mContext)
         val divider = RecyclerViewDivider(mContext, LinearLayoutManager.VERTICAL)
         divider.setmItemSize(DensityUtil.dip2px(mContext,10f))
@@ -139,12 +151,8 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
         rv_air_conditioner.addItemDecoration(divider)
         rv_air_conditioner.adapter = airCondAdapter
 
-        //插座模拟数据
-        socketList = ArrayList<SocketEntity>()
-        socketList.add(SocketEntity("云插座1",false,"停止中"))
-        socketList.add(SocketEntity("云插座2",false,"停止中"))
-        socketList.add(SocketEntity("云插座3",false,"停止中"))
-
+        //插座列表
+        socketList = arrayListOf()
         socketAdapter = SocketAdapter(mContext,socketList,isSocketOpen)
         rv_socket.layoutManager = LinearLayoutManager(mContext)
         rv_socket.addItemDecoration(divider)
@@ -152,15 +160,144 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
 
         setUpListener()
 
-        //初始化房间数据
-        mRoomList.add("房间101")
-        mRoomList.add("房间102")
-        mRoomList.add("房间103")
-        mRoomList.add("房间104")
-        mRoomList.add("房间105")
-        mRoomList.add("房间106")
         //初始化房间选择器
         initRoomOptionPicker()
+    }
+
+    //获取用户信息成功返回
+    override fun success(t: UserEntity) {
+        this.userEntity = t
+        //设置单位名称
+        tv_address.text = t.remark
+
+        //设置用户名
+        tv_name.text = t.userName
+
+        //获取房间列表
+        presenter.getRoomList(t.id)
+    }
+
+    //房间列表获取成功
+    override fun getRoomList(data: MutableList<RoomEntity>) {
+        this.roomList = data
+        if(data.size > 0){
+            //默认显示第一个
+            tv_room.text = data[0].name
+
+            //获取roomId
+            this.roomId = data[0].id
+
+            //请求获取首页信息接口
+            presenter.getInfo(this.userEntity.id,data[0].id)
+
+            //一个房间时隐藏选择下拉
+            if(data.size == 1){
+                iv_change.visibility = View.GONE
+            }
+            //设置房间列表选择数据
+            for(item in data){
+                mRoomList.add(item.name)
+            }
+        }
+    }
+
+    //首页信息成功
+    override fun getInfo(data: ControlEntity) {
+        electricAdapter.clearAllData()
+        airGateList = arrayListOf()
+        airCondAdapter.clearAllData()
+        socketGateList = arrayListOf()
+        socketAdapter.clearAllData()
+        bulbGateList = arrayListOf()
+
+        //设置电量列表数据
+        electricList.add(ElectricEntity("今日电量(度)",data.todayEle))
+        electricList.add(ElectricEntity("当月电量(度)",data.monthEle))
+        electricList.add(ElectricEntity("当前功率(kw)",data.currentPower))
+        electricAdapter.notifyDataSetChanged()
+
+        for(item in data.deviceList){
+            when(item.moduleType){
+                //获取空调总闸列表
+                "空调-费控表" ->{
+                    airGateList.add(item)
+                }
+                //获取空调列表
+                "空调-空调面板" ->{
+                    airList.add(item)
+                    airCondAdapter.notifyDataSetChanged()
+                }
+                //获取插座总闸列表
+                "插座-费控表" ->{
+                    socketGateList.add(item)
+                }
+                //获取插座列表
+                "插座-插座面板"->{
+                    socketList.add(item)
+                    socketAdapter.notifyDataSetChanged()
+                }
+                //获取照明总闸列表
+                "照明-费控表" ->{
+                    bulbGateList.add(item)
+                }
+            }
+        }
+        //获取空调总闸实体，若有多个总闸，只取第一个
+        if(airGateList.size > 0){
+            airGateEntity = airGateList[0]
+
+            ll_air_gate.visibility = View.VISIBLE
+            if(airCondAdapter.data.size > 0){
+                ll_air.visibility = View.VISIBLE
+            }else{
+                ll_air.visibility = View.GONE
+            }
+        }else{
+            ll_air_gate.visibility = View.GONE
+            ll_air.visibility = View.GONE
+        }
+        //获取插座总闸实体，若有多个总闸，只取第一个
+        if(socketGateList.size > 0){
+            socketGateEntity = socketGateList[0]
+
+            ll_socket_gate.visibility = View.VISIBLE
+            if(socketAdapter.data.size > 0){
+                ll_socket.visibility = View.VISIBLE
+            }else{
+                ll_socket.visibility = View.GONE
+            }
+        }else{
+            ll_socket_gate.visibility = View.GONE
+            ll_socket.visibility = View.GONE
+        }
+        //获取照明总闸实体，若有多个总闸，只取第一个
+        if(bulbGateList.size > 0){
+            bulbGateEntity = bulbGateList[0]
+
+            ll_bulb_gate.visibility = View.VISIBLE
+        }else{
+            ll_bulb_gate.visibility = View.GONE
+        }
+    }
+
+    //退出登录成功
+    override fun logout(data: LogoutEntity) {
+        //清除登录状态和token缓存
+        SPUtils.getInstance().remove(ConstantValues.LOGIN_SUCCESS)
+        SPUtils.getInstance().remove(ConstantValues.TOKEN)
+        //返回登录页面
+        startActivity(Intent(mContext,LoginActivity::class.java))
+        //关闭当前页面
+        this.finish()
+    }
+
+    override fun failed(e: Throwable) {
+        //token失效，返回登录页面
+        if(e is BaseException && e.errCode == 113){
+            ToastUtils.showShort(mContext,"验证失效,请重新登录")
+        }else{
+            ToastUtils.showShort(mContext,"请求失败")
+        }
     }
 
     override fun onClick(view: View) {
@@ -175,8 +312,9 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
                 mRoomPickerView?.show()
             }
             R.id.tv_more ->{
-                startActivity(Intent(this,
-                    DataActivity::class.java))
+                startActivity(Intent(this, DataActivity::class.java)
+                    .putExtra("roomId",this.roomId))
+
             }
             //照明总闸开关切换
             R.id.iv_bulb ->{
@@ -216,73 +354,73 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
     private fun setUpListener() {
         //空调适配器的点击事件
         airCondAdapter.setOnItemsClickListener { v, position,checked ->
-            val data = airCondAdapter.data
-            var temp = data[position].setTemp
-            when(v.id){
-                //开关
-                R.id.set_switch ->{
-                    data[position].isOpen = checked
-                    if(checked){
-                        ToastUtils.showShort(mContext,"开")
-                    }else{
-                        ToastUtils.showShort(mContext,"关")
-                    }
-                }
-                //设置模式
-                R.id.tv_set_model ->{
-                    data[position].isHot = !data[position].isHot
-                }
-                //设置风速
-                R.id.tv_set_gear ->{
-                    if(data[position].isAuto){
-                        data[position].isAuto = false
-                        data[position].gear = 1
-                    }else{
-                        when(data[position].gear){
-                            1 ->{
-                                data[position].gear = 2
-                            }
-                            2 ->{
-                                data[position].gear = 3
-                            }
-                            3 ->{
-                                data[position].isAuto = true
-                            }
-                        }
-                    }
-                }
-                //温度减
-                R.id.iv_desc ->{
-                    if(temp > 0){
-                        temp -= 1
-                        airCondAdapter.data[position].setTemp = temp
-                    }
-                }
-                //温度加
-                R.id.iv_add ->{
-                    temp += 1
-                    airCondAdapter.data[position].setTemp = temp
-                }
-            }
-            airCondAdapter.notifyDataSetChanged()
+//            val data = airCondAdapter.data
+//            var temp = data[position].setTemp
+//            when(v.id){
+//                //开关
+//                R.id.set_switch ->{
+//                    data[position].isOpen = checked
+//                    if(checked){
+//                        ToastUtils.showShort(mContext,"开")
+//                    }else{
+//                        ToastUtils.showShort(mContext,"关")
+//                    }
+//                }
+//                //设置模式
+//                R.id.tv_set_model ->{
+//                    data[position].isHot = !data[position].isHot
+//                }
+//                //设置风速
+//                R.id.tv_set_gear ->{
+//                    if(data[position].isAuto){
+//                        data[position].isAuto = false
+//                        data[position].gear = 1
+//                    }else{
+//                        when(data[position].gear){
+//                            1 ->{
+//                                data[position].gear = 2
+//                            }
+//                            2 ->{
+//                                data[position].gear = 3
+//                            }
+//                            3 ->{
+//                                data[position].isAuto = true
+//                            }
+//                        }
+//                    }
+//                }
+//                //温度减
+//                R.id.iv_desc ->{
+//                    if(temp > 0){
+//                        temp -= 1
+//                        airCondAdapter.data[position].setTemp = temp
+//                    }
+//                }
+//                //温度加
+//                R.id.iv_add ->{
+//                    temp += 1
+//                    airCondAdapter.data[position].setTemp = temp
+//                }
+//            }
+//            airCondAdapter.notifyDataSetChanged()
         }
 
         //插座适配器的点击事件
         socketAdapter.setOnItemsClickListener { v, position ->
             val entity = socketAdapter.data[position]
             when(v.id){
-                R.id.iv_socket ->{
-                    if(entity.isOpen){
-                        //进行分闸
-                        entity.isOpen = false
-                        entity.statue = "停止中"
-                    }else{
-                        //进行合闸
-                        entity.isOpen = true
-                        entity.statue = "工作中"
-                    }
-                    socketAdapter.notifyDataSetChanged()
-                }
+//                R.id.iv_socket ->{
+//                    if(entity.isOpen){
+//                        //进行分闸
+//                        entity.isOpen = false
+//                        entity.statue = "停止中"
+//                    }else{
+//                        //进行合闸
+//                        entity.isOpen = true
+//                        entity.statue = "工作中"
+//                    }
+//                    socketAdapter.notifyDataSetChanged()
+//                }
             }
         }
     }
@@ -326,10 +464,10 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
                                 socketAdapter.isGate = false
                                 //修改每一个插座的开关状态
                                 socketAdapter.data.forEach {
-                                    if(it.isOpen){
-                                        it.isOpen = false
-                                        it.statue = "停止中"
-                                    }
+//                                    if(it.isOpen){
+//                                        it.isOpen = false
+//                                        it.statue = "停止中"
+//                                    }
                                 }
                             }else{
                                 isSocketOpen = true
@@ -352,9 +490,9 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
                                 airCondAdapter.isGate = false
                                 //修改每一个空调的开关状态
                                 airCondAdapter.data.forEach {
-                                    if(it.isOpen){
-                                        it.isOpen = false
-                                    }
+//                                    if(it.isOpen){
+//                                        it.isOpen = false
+//                                    }
                                 }
                             }else{
                                 isAirOpen = true
@@ -389,38 +527,19 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
             .show()
     }
 
-    //获取用户信息成功返回
-    override fun success(t: UserEntity) {
-        //设置用户名
-        tv_name.text = t.userName
-    }
-
-    //退出登录成功
-    override fun logout(data: LogoutEntity) {
-        //清除登录状态和token缓存
-        SPUtils.getInstance().remove(ConstantValues.LOGIN_SUCCESS)
-        SPUtils.getInstance().remove(ConstantValues.TOKEN)
-        //返回登录页面
-        startActivity(Intent(mContext,LoginActivity::class.java))
-        //关闭当前页面
-        this.finish()
-    }
-
-    override fun failed(e: Throwable) {
-        //token失效，返回登录页面
-        if(e is BaseException && e.errCode == 113){
-            ToastUtils.showShort(mContext,"验证失效,请重新登录")
-        }else{
-            ToastUtils.showShort(mContext,"请求失败")
-        }
-    }
-
     //初始化房间选择器
     private fun initRoomOptionPicker() {
         mRoomPickerView = OptionsPickerBuilder(this,
             OnOptionsSelectListener { option1, option2, option3, v -> //返回的分别是三个级别的选中位置
                 val tx: String? = mRoomList[option1]
-                ToastUtils.showShort(mContext,tx)
+                tv_room.text = tx
+                for (item in this.roomList){
+                    if(tx == item.name){
+                        //更新roomId
+                        this.roomId = item.id
+                        presenter.getInfo(this.userEntity.id,item.id)
+                    }
+                }
             })
             .setDecorView(findViewById<RelativeLayout>(R.id.activity_rootview)) //必须是RelativeLayout，不设置setDecorView的话，底部虚拟导航栏会显示在弹出的选择器区域
             .setCancelText("取消") //取消按钮文字

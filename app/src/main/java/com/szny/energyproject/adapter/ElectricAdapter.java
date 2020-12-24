@@ -12,14 +12,14 @@ import java.util.List;
 /**
  * 首页电量展示适配器
  * */
-public class ElectricAdapter extends BaseRecyclerViewAdapter<ElectricEntity.ElectricListBean> {
+public class ElectricAdapter extends BaseRecyclerViewAdapter<ElectricEntity> {
 
-    public ElectricAdapter(List<ElectricEntity.ElectricListBean> data) {
+    public ElectricAdapter(List<ElectricEntity> data) {
         super(data, R.layout.item_electric);
     }
 
     @Override
-    protected void convert(BaseViewHolder holder, ElectricEntity.ElectricListBean item, int position) {
+    protected void convert(BaseViewHolder holder, ElectricEntity item, int position) {
         TextView tvName = holder.getView(R.id.tv_name);
         TextView tvValue = holder.getView(R.id.tv_value);
 

@@ -96,10 +96,10 @@ public class BarChartManager {
     }
 
     private int[] getColors() {
-        int stacksize = 4;
+        int stacksize = 3;
         //有尽可能多的颜色每项堆栈值
         int[] colors = new int[stacksize];
-        int[] MATERIAL_COLORS = {rgb("#FFD866"),rgb("#93C37E"),rgb("#74A6AD"),rgb("#6D9EEB")};
+        int[] MATERIAL_COLORS = {rgb("#FFD866"),rgb("#93C37E"),rgb("#74A6AD")};
         for (int i = 0; i < colors.length; i++) {
             colors[i] = MATERIAL_COLORS[i];
         }

@@ -9,16 +9,13 @@ import androidx.appcompat.widget.SwitchCompat;
 import com.szny.energyproject.R;
 import com.szny.energyproject.base.BaseRecyclerViewAdapter;
 import com.szny.energyproject.base.BaseViewHolder;
-import com.szny.energyproject.entity.AirCondEntity;
-import com.szny.energyproject.utils.ToastUtils;
-
-import java.util.ArrayList;
+import com.szny.energyproject.entity.ControlEntity;
 import java.util.List;
 
 /**
  * 首页空调展示适配器
  * */
-public class AirCondAdapter extends BaseRecyclerViewAdapter<AirCondEntity> {
+public class AirCondAdapter extends BaseRecyclerViewAdapter<ControlEntity.DeviceListBean> {
 
     private Context context;
 
@@ -36,14 +33,14 @@ public class AirCondAdapter extends BaseRecyclerViewAdapter<AirCondEntity> {
         this.mOnItemsClickListener  = listener;
     }
 
-    public AirCondAdapter(Context context,List<AirCondEntity> data,boolean isGate) {
+    public AirCondAdapter(Context context, List<ControlEntity.DeviceListBean> data, boolean isGate) {
         super(data, R.layout.item_air_conditioner);
         this.context = context;
         this.isGate = isGate;
     }
 
     @Override
-    protected void convert(BaseViewHolder holder, AirCondEntity item, final int position) {
+    protected void convert(BaseViewHolder holder, ControlEntity.DeviceListBean item, final int position) {
         //空调名字
         TextView tvName = holder.getView(R.id.tv_name);
         //空调开关
@@ -68,55 +65,55 @@ public class AirCondAdapter extends BaseRecyclerViewAdapter<AirCondEntity> {
 
         tvName.setText(item.getName());
 
-        setSwitch.setChecked(item.isOpen());
-
-        tvIndoorTemp.setText(String.valueOf(item.getIndoorTemp()));
-
-        tvSetTemp.setText(String.valueOf(item.getSetTemp()));
-
-        if(item.isHot()){
-            tvModel.setText("制热");
-        }else{
-            tvModel.setText("制冷");
-        }
-
-        if(item.isAuto()){
-            tvGear.setText("自动");
-        }else{
-            switch (item.getGear()){
-                case 1:
-                    tvGear.setText("一档");
-                    break;
-                case 2:
-                    tvGear.setText("二档");
-                    break;
-                case 3:
-                    tvGear.setText("三档");
-                    break;
-            }
-        }
-
-        //设置item中控件的点击回调事件
-        List<View> list = new ArrayList<>();
-        list.add(tvSetModel);list.add(tvSetGear);
-        list.add(ivDesc);list.add(ivAdd);
-        setOnClick(list,position);
-
-        //空调开关监听
-        setSwitch.setOnClickListener(view -> {
-            if(!isGate){
-                ToastUtils.showShort(context,"请先将空调总闸合闸");
-            }
-        });
-        setSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
-            if(isGate){
-                if(mOnItemsClickListener != null){
-                    mOnItemsClickListener.onItemClick(setSwitch,position,checked);
-                }
-            }else{
-                setSwitch.setChecked(false);
-            }
-        });
+//        setSwitch.setChecked(item.isOpen());
+//
+//        tvIndoorTemp.setText(String.valueOf(item.getIndoorTemp()));
+//
+//        tvSetTemp.setText(String.valueOf(item.getSetTemp()));
+//
+//        if(item.isHot()){
+//            tvModel.setText("制热");
+//        }else{
+//            tvModel.setText("制冷");
+//        }
+//
+//        if(item.isAuto()){
+//            tvGear.setText("自动");
+//        }else{
+//            switch (item.getGear()){
+//                case 1:
+//                    tvGear.setText("一档");
+//                    break;
+//                case 2:
+//                    tvGear.setText("二档");
+//                    break;
+//                case 3:
+//                    tvGear.setText("三档");
+//                    break;
+//            }
+//        }
+//
+//        //设置item中控件的点击回调事件
+//        List<View> list = new ArrayList<>();
+//        list.add(tvSetModel);list.add(tvSetGear);
+//        list.add(ivDesc);list.add(ivAdd);
+//        setOnClick(list,position);
+//
+//        //空调开关监听
+//        setSwitch.setOnClickListener(view -> {
+//            if(!isGate){
+//                ToastUtils.showShort(context,"请先将空调总闸合闸");
+//            }
+//        });
+//        setSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
+//            if(isGate){
+//                if(mOnItemsClickListener != null){
+//                    mOnItemsClickListener.onItemClick(setSwitch,position,checked);
+//                }
+//            }else{
+//                setSwitch.setChecked(false);
+//            }
+//        });
     }
 
     public void setOnClick(List<View> list,int position){

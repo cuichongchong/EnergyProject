@@ -37,8 +37,7 @@ class SplashActivity : BaseActivity() {
         ImmersionBar.with(this).init()
 
         //判断是否登陆成功
-        val isLoginSuccess: Boolean =
-            SPUtils.getInstance().getBoolean(ConstantValues.LOGIN_SUCCESS, false)
+        var isLoginSuccess: Boolean = SPUtils.getInstance().getBoolean(ConstantValues.LOGIN_SUCCESS, false)
         if (isLoginSuccess) {
             //登陆成功过直接跳转到首页
             mHandler.sendEmptyMessageDelayed(1, 1000)

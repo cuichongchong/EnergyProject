@@ -30,10 +30,10 @@ public class DataAdapter extends BaseRecyclerViewAdapter<DataEntity> {
         TextView tvAir = holder.getView(R.id.tv_air);
         TextView tvSum = holder.getView(R.id.tv_sum);
 
-        tvData.setText(item.getData());
-        tvLight.setText(item.getLight()+"");
-        tvSocket.setText(item.getSocket()+"");
-        tvAir.setText(item.getAir()+"");
-        tvSum.setText(item.getSum()+"");
+        tvData.setText(item.getDataTime());
+        tvLight.setText(String.valueOf(item.getLight()));
+        tvSocket.setText(String.valueOf(item.getSocket()));
+        tvAir.setText(String.valueOf(item.getAir()));
+        tvSum.setText(String.valueOf(item.getLight()+item.getSocket()+item.getAir()));
     }
 }

@@ -63,7 +63,7 @@
                     android:layout_gravity="center"
                     android:layout_centerHorizontal="true"
                     android:singleLine="true"
-                    android:text="省直机关政五街综合办公楼-省直能源"
+                    android:text=""
                     android:textColor="@color/colorWhite"
                     android:textSize="18sp"/>
                 <TextView
@@ -72,7 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/tv_address"
                     android:layout_centerHorizontal="true"
-                    android:text="503室"
+                    android:text=""
                     android:textColor="@color/colorWhite"
                     android:textSize="24sp"/>
                 <ImageView
@@ -121,22 +121,28 @@
                         android:overScrollMode="never"/>
                 </RelativeLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:drawablePadding="4dp"
-                    android:text="空调"
-                    android:textColor="@color/color_111111"
-                    android:textSize="15sp"
-                    app:drawableLeftCompat="@mipmap/ic_air" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_air_conditioner"
+                <!--空调列表展示-->
+                <LinearLayout
+                    android:id="@+id/ll_air"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:overScrollMode="never"/>
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:drawablePadding="4dp"
+                        android:text="空调"
+                        android:textColor="@color/color_111111"
+                        android:textSize="15sp"
+                        app:drawableLeftCompat="@mipmap/ic_air" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_air_conditioner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:overScrollMode="never"/>
+                </LinearLayout>
 
                 <!--插座列表展示-->
                 <LinearLayout
@@ -171,6 +177,7 @@
                     app:drawableLeftCompat="@mipmap/ic_control" />
 
                 <LinearLayout
+                    android:id="@+id/ll_bulb_gate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -217,6 +224,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_socket_gate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -263,6 +271,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_air_gate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"

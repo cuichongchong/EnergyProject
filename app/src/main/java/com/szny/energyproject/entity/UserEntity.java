@@ -11,6 +11,7 @@ public class UserEntity {
     private String userName;
     private int id;
     private int roleId;
+    private String remark;
 
     public String getUserName() {
         return userName;
@@ -34,5 +35,13 @@ public class UserEntity {
 
     public void setRoleId(int roleId) {
         this.roleId = roleId;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

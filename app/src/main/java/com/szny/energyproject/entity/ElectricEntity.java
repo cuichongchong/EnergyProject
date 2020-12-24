@@ -1,44 +1,30 @@
 package com.szny.energyproject.entity;
 
-import java.util.List;
-
 /**
- * 首页电量展示实体，测试使用
+ * 首页电量展示实体
  * */
 public class ElectricEntity {
-    private List<ElectricListBean> electric_list;
+    private String name;
+    private String value;
 
-    public List<ElectricListBean> getElectric_list() {
-        return electric_list;
+    public ElectricEntity(String name, String value) {
+        this.name = name;
+        this.value = value;
     }
 
-    public void setElectric_list(List<ElectricListBean> electric_list) {
-        this.electric_list = electric_list;
+    public String getName() {
+        return name;
     }
 
-    public static class ElectricListBean {
-        private String name;
-        private String value;
+    public void setName(String name) {
+        this.name = name;
+    }
 
-        public ElectricListBean(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
+    public String getValue() {
+        return value;
+    }
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
+    public void setValue(String value) {
+        this.value = value;
     }
 }

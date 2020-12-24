@@ -2,60 +2,51 @@ package com.szny.energyproject.entity;
 
 
 /**
- * 数据页面展示实体，测试使用
+ * 数据页面展示实体
  * */
 public class DataEntity {
-    private String data;
-    private int light;
-    private int socket;
-    private int air;
-    private int sum;
 
-    public DataEntity(String data, int light, int socket, int air, int sum) {
-        this.data = data;
-        this.light = light;
-        this.socket = socket;
-        this.air = air;
-        this.sum = sum;
+    /**
+     * dataTime : 2020-12-01
+     * light : 1.0
+     * socket : 2.0
+     * air : 3.0
+     */
+
+    private String dataTime;
+    private double light;
+    private double socket;
+    private double air;
+
+    public String getDataTime() {
+        return dataTime;
     }
 
-    public String getData() {
-        return data;
+    public void setDataTime(String dataTime) {
+        this.dataTime = dataTime;
     }
 
-    public void setData(String data) {
-        this.data = data;
-    }
-
-    public int getLight() {
+    public double getLight() {
         return light;
     }
 
-    public void setLight(int light) {
+    public void setLight(double light) {
         this.light = light;
     }
 
-    public int getSocket() {
+    public double getSocket() {
         return socket;
     }
 
-    public void setSocket(int socket) {
+    public void setSocket(double socket) {
         this.socket = socket;
     }
 
-    public int getAir() {
+    public double getAir() {
         return air;
     }
 
-    public void setAir(int air) {
+    public void setAir(double air) {
         this.air = air;
-    }
-
-    public int getSum() {
-        return sum;
-    }
-
-    public void setSum(int sum) {
-        this.sum = sum;
     }
 }

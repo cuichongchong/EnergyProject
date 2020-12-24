@@ -4,11 +4,15 @@ import com.google.gson.Gson;
 import com.szny.energyproject.base.BaseEntity;
 import com.szny.energyproject.constant.ConstantValues;
 import com.szny.energyproject.constant.UrlHelper;
+import com.szny.energyproject.entity.ControlEntity;
+import com.szny.energyproject.entity.DataEntity;
 import com.szny.energyproject.entity.LogoutEntity;
 import com.szny.energyproject.entity.LoginEntity;
+import com.szny.energyproject.entity.RoomEntity;
 import com.szny.energyproject.entity.UserEntity;
 import com.szny.energyproject.utils.SPUtils;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
@@ -20,10 +24,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -110,6 +116,18 @@ public class RetrofitManager {
         //获取用户信息
         @GET("http://172.10.11.33:6661/api/systematic/user/info")
         Observable<BaseEntity<UserEntity>> userInfo();
+
+        //获取房间列表
+        @GET("http://172.10.11.33:6666/api/client/desktop/getRoom/{id}")
+        Observable<BaseEntity<List<RoomEntity>>> getRoomList(@Path("id")int id);
+
+        //获取首页信息
+        @POST("http://172.10.11.33:6666/api/client/desktop/getInfo")
+        Observable<BaseEntity<ControlEntity>> getInfo(@Body RequestBody requestBody);
+
+        //获取数据信息
+        @POST("http://172.10.11.33:6666/api/client/analysis/getReport")
+        Observable<BaseEntity<List<DataEntity>>> getReport(@Body RequestBody requestBody);
     }
 
 }
