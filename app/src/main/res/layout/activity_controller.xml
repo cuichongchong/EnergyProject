@@ -218,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center_horizontal"
-                        android:text="灯熄"
+                        android:text=""
                         android:textSize="16sp"
                         android:textColor="@color/color_1790FF"/>
                 </LinearLayout>
@@ -265,7 +265,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center_horizontal"
-                        android:text="待机中"
+                        android:text=""
                         android:textSize="16sp"
                         android:textColor="@color/color_1790FF"/>
                 </LinearLayout>

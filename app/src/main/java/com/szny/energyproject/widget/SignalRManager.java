@@ -1,5 +1,7 @@
 package com.szny.energyproject.widget;
 
+import android.util.Log;
+
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 import com.szny.energyproject.constant.ConstantValues;
@@ -17,15 +19,24 @@ public class SignalRManager {
         private static final SignalRManager instance = new SignalRManager();
     }
 
-    private SignalRManager(){
+    public static SignalRManager getInstance(){
+        return SignalRManagerHolder.instance;
+    }
+
+    public HubConnection getHubConnection(){
+        return hubConnection;
+    }
+
+    //初始化
+    public void init(){
         new Thread(() -> {
             try {
-                //初始化
                 String SIGNSLR_URL = "http://172.10.11.66:49315/collector";
+                String token = SPUtils.getInstance().getString(ConstantValues.TOKEN,"");
                 hubConnection = HubConnectionBuilder.create(SIGNSLR_URL)
                         .withAccessTokenProvider(Single.defer(() -> {
                             // Your logic here.
-                            return Single.just(SPUtils.getInstance().getString(ConstantValues.TOKEN,""));
+                            return Single.just(token);
                         }))
                         .build();
 
@@ -42,18 +53,14 @@ public class SignalRManager {
 
                 //开启连接
                 hubConnection.start().blockingAwait();
+
+                connectCallBack.isConnect(true);
+
             } catch (Exception e) {
+                connectCallBack.isConnect(false);
                 e.printStackTrace();
             }
         }).start();
-    }
-
-    public static SignalRManager getInstance(){
-        return SignalRManagerHolder.instance;
-    }
-
-    public HubConnection getHubConnection(){
-        return hubConnection;
     }
 
     public void close(){
@@ -67,5 +74,14 @@ public class SignalRManager {
     }
     public interface IcallBack{
         void receiver(SupconMessage message);
+    }
+
+    //连接成功的监听
+    public connectCallBack connectCallBack;
+    public void setConnectCallBack(connectCallBack connectCallBack){
+        this.connectCallBack = connectCallBack;
+    }
+    public interface connectCallBack{
+        void isConnect(Boolean isConnect);
     }
 }

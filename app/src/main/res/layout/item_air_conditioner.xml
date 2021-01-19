@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="办公室空调"
+            android:text=""
             android:textColor="@color/color_111111"
             android:textSize="16sp"/>
         <TextView
@@ -61,16 +61,24 @@
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/iv_img"
             app:drawableEndCompat="@mipmap/ic_centigrade_red"
-            android:text="25"
+            android:text=""
             android:textSize="40sp"
             android:textColor="@color/color_f44336"/>
+        <TextView
+            android:id="@+id/tv_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_indoor_temp"
+            android:drawableLeft="@mipmap/ic_refresh"
+            android:text="温度刷新"
+            android:textSize="14sp"/>
         <TextView
             android:id="@+id/tv_model"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/tv_indoor_temp"
             android:layout_marginStart="20dp"
-            android:text="制冷"
+            android:text=""
             android:textSize="15sp"
             android:textColor="@color/color_1790FF"/>
         <TextView
@@ -81,7 +89,7 @@
             android:layout_below="@+id/tv_model"
             android:layout_marginStart="20dp"
             android:layout_marginTop="30dp"
-            android:text="自动"
+            android:text=""
             android:textSize="15sp"
             android:textColor="@color/color_1790FF"/>
         <TextView
@@ -91,7 +99,7 @@
             android:layout_toEndOf="@+id/tv_model"
             android:layout_marginStart="20dp"
             android:layout_marginTop="18dp"
-            android:text="26"
+            android:text=""
             android:textColor="@color/color_111111"
             android:textSize="26sp"
             app:drawableRightCompat="@mipmap/ic_centigrade"

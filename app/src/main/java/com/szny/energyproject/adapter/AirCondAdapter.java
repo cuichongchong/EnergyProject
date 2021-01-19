@@ -10,6 +10,9 @@ import com.szny.energyproject.R;
 import com.szny.energyproject.base.BaseRecyclerViewAdapter;
 import com.szny.energyproject.base.BaseViewHolder;
 import com.szny.energyproject.entity.ControlEntity;
+import com.szny.energyproject.utils.ToastUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,6 +50,8 @@ public class AirCondAdapter extends BaseRecyclerViewAdapter<ControlEntity.Device
         SwitchCompat setSwitch = holder.getView(R.id.set_switch);
         //室内温度
         TextView tvIndoorTemp = holder.getView(R.id.tv_indoor_temp);
+        //刷新室内温度
+        TextView tvRefresh = holder.getView(R.id.tv_refresh);
         //当前模式(制冷/制热)
         TextView tvModel = holder.getView(R.id.tv_model);
         //当前风速(自动/一档/二档/三档)
@@ -62,58 +67,61 @@ public class AirCondAdapter extends BaseRecyclerViewAdapter<ControlEntity.Device
         //温度加
         ImageView ivAdd = holder.getView(R.id.iv_add);
 
-
         tvName.setText(item.getName());
 
-//        setSwitch.setChecked(item.isOpen());
-//
-//        tvIndoorTemp.setText(String.valueOf(item.getIndoorTemp()));
-//
-//        tvSetTemp.setText(String.valueOf(item.getSetTemp()));
-//
-//        if(item.isHot()){
-//            tvModel.setText("制热");
-//        }else{
-//            tvModel.setText("制冷");
-//        }
-//
-//        if(item.isAuto()){
-//            tvGear.setText("自动");
-//        }else{
-//            switch (item.getGear()){
-//                case 1:
-//                    tvGear.setText("一档");
-//                    break;
-//                case 2:
-//                    tvGear.setText("二档");
-//                    break;
-//                case 3:
-//                    tvGear.setText("三档");
-//                    break;
-//            }
-//        }
-//
-//        //设置item中控件的点击回调事件
-//        List<View> list = new ArrayList<>();
-//        list.add(tvSetModel);list.add(tvSetGear);
-//        list.add(ivDesc);list.add(ivAdd);
-//        setOnClick(list,position);
-//
-//        //空调开关监听
-//        setSwitch.setOnClickListener(view -> {
-//            if(!isGate){
-//                ToastUtils.showShort(context,"请先将空调总闸合闸");
-//            }
-//        });
-//        setSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
-//            if(isGate){
-//                if(mOnItemsClickListener != null){
-//                    mOnItemsClickListener.onItemClick(setSwitch,position,checked);
-//                }
-//            }else{
-//                setSwitch.setChecked(false);
-//            }
-//        });
+        if(item.getRunStatus() == 0){
+            setSwitch.setChecked(false);
+        }else if(item.getRunStatus() == 1){
+            setSwitch.setChecked(true);
+        }
+
+        tvIndoorTemp.setText(item.getTemp().toString());
+
+        tvSetTemp.setText(item.getSetTemp().toString());
+
+        if(item.getRunMode() == 1){
+            tvModel.setText("制冷");
+        }else if(item.getRunMode() == 4){
+            tvModel.setText("制热");
+        }
+
+        switch (item.getWindSped()){
+            case 0:
+                tvGear.setText("自动");
+                break;
+            case 1:
+                tvGear.setText("低档");
+                break;
+            case 2:
+                tvGear.setText("中档");
+                break;
+            case 3:
+                tvGear.setText("高档");
+                break;
+        }
+
+        //设置item中控件的点击回调事件
+        List<View> list = new ArrayList<>();
+        list.add(tvSetModel);list.add(tvSetGear);
+        list.add(ivDesc);list.add(ivAdd);
+        list.add(tvRefresh);
+        setOnClick(list,position);
+
+        //空调开关监听
+        setSwitch.setOnClickListener(view -> {
+            if(!isGate){
+                ToastUtils.showShort(context,"请先将空调总闸合闸");
+            }
+        });
+        setSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
+            if(isGate){
+                if(mOnItemsClickListener != null){
+                    mOnItemsClickListener.onItemClick(setSwitch,position,checked);
+                }
+            }else{
+                setSwitch.setChecked(false);
+            }
+        });
     }
 
     public void setOnClick(List<View> list,int position){
