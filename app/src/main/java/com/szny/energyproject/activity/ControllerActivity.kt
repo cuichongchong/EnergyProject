@@ -14,6 +14,8 @@ import com.bigkoo.pickerview.listener.OnOptionsSelectListener
 import com.bigkoo.pickerview.view.OptionsPickerView
 import com.google.gson.Gson
 import com.gyf.barlibrary.ImmersionBar
+import com.scwang.smartrefresh.layout.api.RefreshLayout
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener
 import com.szny.energyproject.R
 import com.szny.energyproject.adapter.AirCondAdapter
 import com.szny.energyproject.adapter.ElectricAdapter
@@ -36,7 +38,7 @@ import kotlinx.android.synthetic.main.activity_controller.*
 /**
  * 控制管理页面
  * */
-class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
+class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListener,IControlView {
 
     private lateinit var electricAdapter:ElectricAdapter
     private lateinit var electricList:MutableList<ElectricEntity>
@@ -115,6 +117,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
     }
 
     private fun initEvent() {
+        srl.setOnRefreshListener(this)
         iv_about.setOnClickListener(this)
         tv_more.setOnClickListener(this)
         tv_name.setOnClickListener(this)
@@ -187,9 +190,18 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
                 //切换到主线程进行空调列表实时温度刷新
                 runOnUiThread {
                     airCondAdapter.notifyDataSetChanged()
+                    ToastUtils.showShort(mContext,"更新完成")
                 }
             }
+            //恢复空调面板的开关由自身回调控制
+            airCondAdapter.isGateControl = false
         }
+    }
+
+    //下拉刷新回调
+    override fun onRefresh(refreshlayout: RefreshLayout) {
+        //获取用户信息
+        presenter.userInfo()
     }
 
     //写控制writeSignal方法
@@ -226,6 +238,8 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
 
     //获取用户信息成功返回
     override fun success(t: UserEntity) {
+        srl.finishRefresh()
+
         this.userEntity = t
         //设置单位名称
         tv_address.text = t.remark
@@ -572,7 +586,14 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
                     readSignal(item.terminalCode,index++,item.code+indoorTempTag)
                 }
             }
-            airCondAdapter.notifyDataSetChanged()
+
+            if(rv_air_conditioner.isComputingLayout){
+                rv_air_conditioner.post {
+                    airCondAdapter.notifyDataSetChanged()
+                }
+            }else{
+                airCondAdapter.notifyDataSetChanged()
+            }
         }
 
         //插座适配器的点击事件
@@ -630,7 +651,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
                     when(type){
                         //表示照明总闸确认
                         1 ->{
-                            //获取控制照明的tag值/data值
+                            //获取控制照明总闸的tag值/data值
                             var openBulbTag = ""
                             var openData = ""
                             var closeBulbTag = ""
@@ -694,6 +715,26 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
                         }
                         //表示空调总闸确认
                         3 ->{
+                            //表示是空调总闸控制的空调面板的开关
+                            airCondAdapter.isGateControl = true
+
+                            //获取控制空调总闸的tag值/data值
+                            var openAirTag = ""
+                            var openData = ""
+                            var closeAirTag = ""
+                            var closeData = ""
+                            airGateEntity.moduleControl.forEach {
+                                when(it.name){
+                                    "开" ->{
+                                        openAirTag = getControlTag(it.tag)
+                                        openData = it.data
+                                    }
+                                    "关" ->{
+                                        closeAirTag = getControlTag(it.tag)
+                                        closeData = it.data
+                                    }
+                                }
+                            }
                             if(isOpen){
                                 isAirOpen = false
                                 iv_air.setBackgroundResource(R.mipmap.ic_switch_close)
@@ -701,12 +742,16 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
 
                                 //修改空调列表中总闸状态
                                 airCondAdapter.isGate = false
+
                                 //修改每一个空调的开关状态
                                 airCondAdapter.data.forEach {
                                     if(it.runStatus == 1){
                                         it.runStatus = 0
                                     }
                                 }
+
+                                LogUtils.e("doing","空调总闸关闭")
+                                writeSignal(airGateEntity.terminalCode,index++,airGateEntity.code+closeAirTag,closeData)
                             }else{
                                 isAirOpen = true
                                 iv_air.setBackgroundResource(R.mipmap.ic_switch_open)
@@ -714,6 +759,16 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
 
                                 //修改空调列表中总闸状态
                                 airCondAdapter.isGate = true
+
+                                //修改每一个空调的开关状态
+                                airCondAdapter.data.forEach {
+                                    if(it.runStatus == 0){
+                                        it.runStatus = 1
+                                    }
+                                }
+
+                                LogUtils.e("doing","空调总闸开启")
+                                writeSignal(airGateEntity.terminalCode,index++,airGateEntity.code+openAirTag,openData)
                             }
                             airCondAdapter.notifyDataSetChanged()
                         }
@@ -743,7 +798,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
     //初始化房间选择器
     private fun initRoomOptionPicker() {
         mRoomPickerView = OptionsPickerBuilder(this,
-            OnOptionsSelectListener { option1, option2, option3, v -> //返回的分别是三个级别的选中位置
+            OnOptionsSelectListener { option1, _, _, _ -> //返回的分别是三个级别的选中位置
                 val tx: String? = mRoomList[option1]
                 tv_room.text = tx
                 for (item in this.roomList){
@@ -782,7 +837,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
         if (dialog == null) {
             dialog = CommonDialog(mContext)
         }
-        dialog!!.setMessage("1.技术支持:河南省省直能源实业有限公司.\n2.Copyright © 2019 - 2020 河南省省直能源实业有限公司 版权所有.")
+        dialog!!.setMessage("1.技术支持:河南省省直能源实业有限公司.\n2.Copyright © 2019 - 2021 河南省省直能源实业有限公司 版权所有.")
             .setTitle("关于")
             .setSingle(true)
             .setNegtive("确认")
@@ -821,6 +876,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, IControlView {
     }
 
     override fun failed(e: Throwable) {
+        srl.finishRefresh()
         //token失效，返回登录页面
         if(e is BaseException && e.errCode == 113){
             ToastUtils.showShort(mContext,"验证失效,请重新登录")

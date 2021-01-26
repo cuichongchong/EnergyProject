@@ -1,7 +1,5 @@
 package com.szny.energyproject.widget;
 
-import android.util.Log;
-
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 import com.szny.energyproject.constant.ConstantValues;

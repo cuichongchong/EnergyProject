@@ -25,6 +25,11 @@ public class AirCondAdapter extends BaseRecyclerViewAdapter<ControlEntity.Device
     //空调总闸门的状态
     public boolean isGate;
 
+    //是否是空调总闸门开关控制的空调面板开关
+    //true表示是，不进行onItemClick回调
+    //false表示不是，进行回调
+    public boolean isGateControl = false;
+
     //定义item中控件的点击回调事件
     public interface OnItemsClickListener  {
         void onItemClick(View v, int position,boolean checked);
@@ -114,12 +119,16 @@ public class AirCondAdapter extends BaseRecyclerViewAdapter<ControlEntity.Device
             }
         });
         setSwitch.setOnCheckedChangeListener((compoundButton, checked) -> {
-            if(isGate){
-                if(mOnItemsClickListener != null){
-                    mOnItemsClickListener.onItemClick(setSwitch,position,checked);
-                }
+            if(isGateControl){
+               setSwitch.setChecked(isGate);
             }else{
-                setSwitch.setChecked(false);
+                if(isGate){
+                    if(mOnItemsClickListener != null){
+                        mOnItemsClickListener.onItemClick(setSwitch,position,checked);
+                    }
+                }else{
+                    setSwitch.setChecked(false);
+                }
             }
         });
     }
