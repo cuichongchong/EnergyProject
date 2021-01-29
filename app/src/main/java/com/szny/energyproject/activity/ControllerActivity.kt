@@ -267,8 +267,11 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
             //一个房间时隐藏选择下拉
             if(data.size == 1){
                 iv_change.visibility = View.GONE
+            }else{
+                iv_change.visibility = View.VISIBLE
             }
             //设置房间列表选择数据
+            mRoomList.clear()
             for(item in data){
                 mRoomList.add(item.name)
             }
@@ -303,6 +306,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
                         when(it.name){
                             "运行状态" ->{
                                 item.runStatus = it.tagValue.toInt()
+                                item.runOldStatus = it.tagValue.toInt()
                             }
                             "运行模式" ->{
                                 item.runMode = it.tagValue.toInt()
@@ -367,7 +371,22 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
         //获取插座总闸实体，若有多个总闸，只取第一个
         if(socketGateList.size > 0){
             socketGateEntity = socketGateList[0]
-
+            socketGateEntity.moduleControl.forEach {
+                //初始化插座总闸状态
+                if("开关状态" == it.name){
+                    if(it.tagValue == "1"){
+                        isSocketOpen = true
+                        iv_socket.setBackgroundResource(R.mipmap.ic_switch_open)
+                        tv_socket.text = "合闸"
+                        tv_socket_status.text = "工作中"
+                    }else if(it.tagValue == "0"){
+                        isSocketOpen = false
+                        iv_socket.setBackgroundResource(R.mipmap.ic_switch_close)
+                        tv_socket.text = "分闸"
+                        tv_socket_status.text = "待机中"
+                    }
+                }
+            }
             ll_socket_gate.visibility = View.VISIBLE
             if(socketAdapter.data.size > 0){
                 ll_socket.visibility = View.VISIBLE
@@ -501,10 +520,12 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
                 R.id.set_switch ->{
                     if(checked){
                         item.runStatus = 1
+                        item.runOldStatus = 1
                         LogUtils.e("doing","空调开")
                         writeSignal(item.terminalCode,index++,item.code+openTag,"1")
                     }else{
                         item.runStatus = 0
+                        item.runOldStatus = 0
                         LogUtils.e("doing","空调关")
                         writeSignal(item.terminalCode,index++,item.code+openTag,"0")
                     }
@@ -600,18 +621,18 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
         socketAdapter.setOnItemsClickListener { v, position ->
             val entity = socketAdapter.data[position]
             when(v.id){
-//                R.id.iv_socket ->{
-//                    if(entity.isOpen){
-//                        //进行分闸
-//                        entity.isOpen = false
-//                        entity.statue = "停止中"
-//                    }else{
-//                        //进行合闸
-//                        entity.isOpen = true
-//                        entity.statue = "工作中"
-//                    }
-//                    socketAdapter.notifyDataSetChanged()
-//                }
+                /*R.id.iv_socket ->{
+                    if(entity.isOpen){
+                        //进行分闸
+                        entity.isOpen = false
+                        entity.statue = "待机中"
+                    }else{
+                        //进行合闸
+                        entity.isOpen = true
+                        entity.statue = "工作中"
+                    }
+                    socketAdapter.notifyDataSetChanged()
+                }*/
             }
         }
     }
@@ -688,6 +709,23 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
                         }
                         //表示插座总闸确认
                         2 ->{
+                            //获取控制插座总闸的tag值/data值
+                            var openSocketTag = ""
+                            var openData = ""
+                            var closeSocketTag = ""
+                            var closeData = ""
+                            socketGateEntity.moduleControl.forEach {
+                                when(it.name){
+                                    "开" ->{
+                                        openSocketTag = getControlTag(it.tag)
+                                        openData = it.data
+                                    }
+                                    "关" ->{
+                                        closeSocketTag = getControlTag(it.tag)
+                                        closeData = it.data
+                                    }
+                                }
+                            }
                             if(isOpen){
                                 isSocketOpen = false
                                 iv_socket.setBackgroundResource(R.mipmap.ic_switch_close)
@@ -695,23 +733,30 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
                                 tv_socket_status.text = "待机中"
 
                                 //修改插座列表中总闸状态
-                                socketAdapter.isGate = false
+                                //socketAdapter.isGate = false
                                 //修改每一个插座的开关状态
-                                socketAdapter.data.forEach {
-//                                    if(it.isOpen){
-//                                        it.isOpen = false
-//                                        it.statue = "停止中"
-//                                    }
-                                }
+                                /*socketAdapter.data.forEach {
+                                    if(it.isOpen){
+                                        it.isOpen = false
+                                        it.statue = "停止中"
+                                    }
+                                }*/
+
+                                LogUtils.e("doing","插座待机")
+                                writeSignal(socketGateEntity.terminalCode,index++,socketGateEntity.code+closeSocketTag,closeData)
                             }else{
                                 isSocketOpen = true
                                 iv_socket.setBackgroundResource(R.mipmap.ic_switch_open)
                                 tv_socket.text = "合闸"
+                                tv_socket_status.text = "工作中"
 
                                 //修改插座列表中总闸状态
-                                socketAdapter.isGate = true
+                                //socketAdapter.isGate = true
+
+                                LogUtils.e("doing","插座工作")
+                                writeSignal(socketGateEntity.terminalCode,index++,socketGateEntity.code+openSocketTag,openData)
                             }
-                            socketAdapter.notifyDataSetChanged()
+                            //socketAdapter.notifyDataSetChanged()
                         }
                         //表示空调总闸确认
                         3 ->{
@@ -762,9 +807,10 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
 
                                 //修改每一个空调的开关状态
                                 airCondAdapter.data.forEach {
-                                    if(it.runStatus == 0){
+                                    it.runStatus = it.runOldStatus
+                                    /*if(it.runStatus == 0){
                                         it.runStatus = 1
-                                    }
+                                    }*/
                                 }
 
                                 LogUtils.e("doing","空调总闸开启")

@@ -52,30 +52,30 @@ public class SocketAdapter extends BaseRecyclerViewAdapter<ControlEntity.DeviceL
 
         tvName.setText(item.getName());
 
-//        if(!isGate){
-//            tvSocket.setText("分闸");
-//            ivSocket.setBackgroundResource(R.mipmap.ic_switch_close);
-//        }else{
-//            if(item.isOpen()){
-//                tvSocket.setText("合闸");
-//                ivSocket.setBackgroundResource(R.mipmap.ic_switch_open);
-//            }else{
-//                tvSocket.setText("分闸");
-//                ivSocket.setBackgroundResource(R.mipmap.ic_switch_close);
-//            }
-//        }
-//
-//        tvStatus.setText(item.getStatue());
-//
-//        ivSocket.setOnClickListener(view -> {
-//            if(!isGate){
-//                ToastUtils.showShort(context,"请先将插座总闸合闸");
-//            }else{
-//                if(mOnItemsClickListener != null){
-//                    mOnItemsClickListener.onItemClick(ivSocket,position);
-//                }
-//            }
-//        });
+        /*if(!isGate){
+            tvSocket.setText("分闸");
+            ivSocket.setBackgroundResource(R.mipmap.ic_switch_close);
+        }else{
+            if(item.isOpen()){
+                tvSocket.setText("合闸");
+                ivSocket.setBackgroundResource(R.mipmap.ic_switch_open);
+            }else{
+                tvSocket.setText("分闸");
+                ivSocket.setBackgroundResource(R.mipmap.ic_switch_close);
+            }
+        }
+
+        tvStatus.setText(item.getStatue());
+
+        ivSocket.setOnClickListener(view -> {
+            if(!isGate){
+                ToastUtils.showShort(context,"请先将插座总闸合闸");
+            }else{
+                if(mOnItemsClickListener != null){
+                    mOnItemsClickListener.onItemClick(ivSocket,position);
+                }
+            }
+        });*/
 
     }
 }

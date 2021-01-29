@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
+        <shape>
+            <solid android:color="#2ca2fc"/>
+        </shape>
+    </item>
+    <item>
         <bitmap
-            android:id="@+id/bitmap_splash"
-            android:src="@mipmap/ic_splash">
-        </bitmap>
+            android:gravity="center"
+            android:src="@mipmap/ic_splash"/>
     </item>
 </layer-list>

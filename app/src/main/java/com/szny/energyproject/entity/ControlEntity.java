@@ -71,6 +71,7 @@ public class ControlEntity {
         private List<ModuleControlBean> moduleControl;
 
         private int runStatus;//空调开关状态
+        private int runOldStatus;//记录空调总闸控制之前空调的开关状态
         private int runMode;//制热制冷模式
         private Double temp;//当前温度
         private Double setTemp;//设置的温度
@@ -170,6 +171,14 @@ public class ControlEntity {
 
         public void setWindSped(int windSped) {
             this.windSped = windSped;
+        }
+
+        public int getRunOldStatus() {
+            return runOldStatus;
+        }
+
+        public void setRunOldStatus(int runOldStatus) {
+            this.runOldStatus = runOldStatus;
         }
 
         public static class ModuleControlBean {

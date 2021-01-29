@@ -43,7 +43,8 @@
         android:id="@+id/srl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar">
+        android:layout_below="@+id/toolbar"
+        app:srlDragRate="1">
 
         <com.scwang.smartrefresh.header.MaterialHeader
             android:layout_width="match_parent"
@@ -83,7 +84,7 @@
                         android:layout_centerHorizontal="true"
                         android:text=""
                         android:textColor="@color/colorWhite"
-                        android:textSize="24sp"/>
+                        android:textSize="21sp"/>
                     <ImageView
                         android:id="@+id/iv_change"
                         android:layout_width="wrap_content"
