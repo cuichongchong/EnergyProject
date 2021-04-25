@@ -101,32 +101,32 @@ public class RetrofitManager {
 
         //登录
         @FormUrlEncoded
-        @POST("oauth/token")
+        @POST("auth/oauth/token")
         Observable<LoginEntity> login(@FieldMap Map<String, Object> map);
 
         //刷新access_token
         @FormUrlEncoded
-        @POST("oauth/token")
+        @POST("auth/oauth/token")
         Observable<LoginEntity> refreshToken(@FieldMap Map<String, Object> map);
 
         //退出登录
-        @GET("revokeAndroid")
+        @GET("auth/revokeAndroid")
         Observable<LogoutEntity> logout(@Query("access_token")String access_token);
 
         //获取用户信息
-        @GET("http://172.10.11.33:6661/api/systematic/user/info")
+        @GET("api/systematic/user/info")
         Observable<BaseEntity<UserEntity>> userInfo();
 
         //获取房间列表
-        @GET("http://172.10.11.33:6666/api/client/desktop/getRoom/{id}")
+        @GET("api/client/desktop/getRoom/{id}")
         Observable<BaseEntity<List<RoomEntity>>> getRoomList(@Path("id")int id);
 
         //获取首页信息
-        @POST("http://172.10.11.33:6666/api/client/desktop/getInfo")
+        @POST("api/client/desktop/getInfo")
         Observable<BaseEntity<ControlEntity>> getInfo(@Body RequestBody requestBody);
 
         //获取数据信息
-        @POST("http://172.10.11.33:6666/api/client/analysis/getReport")
+        @POST("api/client/analysis/getReport")
         Observable<BaseEntity<List<DataEntity>>> getReport(@Body RequestBody requestBody);
     }
 

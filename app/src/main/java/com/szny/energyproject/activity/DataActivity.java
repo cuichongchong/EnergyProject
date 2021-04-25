@@ -9,7 +9,6 @@ import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.CustomListener;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
@@ -17,7 +16,6 @@ import com.bigkoo.pickerview.view.TimePickerView;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.szny.energyproject.R;
 import com.szny.energyproject.adapter.DataAdapter;
@@ -30,10 +28,11 @@ import com.szny.energyproject.utils.TimeUtils;
 import com.szny.energyproject.utils.ToastUtils;
 import com.szny.energyproject.widget.BarChartManager;
 import com.szny.energyproject.widget.PieChartManager;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -125,6 +124,28 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
     public void success(List<DataEntity> dataEntities) {
         dataAdapter.clearAllData();
         if(dataEntities != null && dataEntities.size() > 0){
+
+            //对数据按照日期进行排序
+            Collections.sort(dataEntities, new Comparator<DataEntity>() {
+                @Override
+                public int compare(DataEntity o1, DataEntity o2) {
+                    int flag = 0;
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    try {
+                        Date dt1 = format.parse(o1.getDataTime());
+                        Date dt2 = format.parse(o2.getDataTime());
+                        if (dt1.getTime() > dt2.getTime()) {
+                            flag = 1;
+                        } else if (dt1.getTime() < dt2.getTime()) {
+                            flag = -1;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return flag;
+                }
+            });
+
             //设置条形图
             showBarChart(dataEntities);
 

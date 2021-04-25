@@ -34,6 +34,7 @@ import com.szny.energyproject.utils.ToastUtils
 import com.szny.energyproject.widget.CommonDialog
 import com.szny.energyproject.widget.SignalRManager
 import kotlinx.android.synthetic.main.activity_controller.*
+import java.math.BigDecimal
 
 /**
  * 控制管理页面
@@ -71,18 +72,21 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
     //空调总闸实体
     private lateinit var airGateList:MutableList<ControlEntity.DeviceListBean>
     private lateinit var airGateEntity:ControlEntity.DeviceListBean
+    private var airPower = 0.00 //空调总闸的功率
     //空调列表
     private lateinit var airList: MutableList<ControlEntity.DeviceListBean>
 
     //插座总闸实体
     private lateinit var socketGateList:MutableList<ControlEntity.DeviceListBean>
     private lateinit var socketGateEntity:ControlEntity.DeviceListBean
+    private var socketPower = 0.00 //插座总闸的功率
     //插座列表
     private lateinit var socketList:MutableList<ControlEntity.DeviceListBean>
 
     //照明总闸实体
     private lateinit var bulbGateList:MutableList<ControlEntity.DeviceListBean>
     private lateinit var bulbGateEntity:ControlEntity.DeviceListBean
+    private var bulbPower = 0.00 //照明总闸的功率
 
     private lateinit var presenter: ControlPresenter
 
@@ -287,12 +291,6 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
         socketAdapter.clearAllData()
         bulbGateList = arrayListOf()
 
-        //设置电量列表数据
-        electricList.add(ElectricEntity("今日电量(度)",data.todayEle))
-        electricList.add(ElectricEntity("当月电量(度)",data.monthEle))
-        electricList.add(ElectricEntity("当前功率(kw)",data.currentPower))
-        electricAdapter.notifyDataSetChanged()
-
         for(item in data.deviceList){
             when(item.moduleType){
                 //获取空调总闸列表
@@ -344,17 +342,22 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
             airGateEntity = airGateList[0]
             airGateEntity.moduleControl.forEach {
                 //初始化空调总闸状态
-                if("开关状态" == it.name){
-                    if(it.tagValue == "1"){
-                        isAirOpen = true
-                        iv_air.setBackgroundResource(R.mipmap.ic_switch_open)
-                        tv_air.text = "合闸"
-                    }else if(it.tagValue == "0"){
-                        isAirOpen = false
-                        iv_air.setBackgroundResource(R.mipmap.ic_switch_close)
-                        tv_air.text = "分闸"
+                when(it.name){
+                    "开关状态" ->{
+                        if(it.tagValue == "1"){
+                            isAirOpen = true
+                            iv_air.setBackgroundResource(R.mipmap.ic_switch_open)
+                            tv_air.text = "合闸"
+                        }else if(it.tagValue == "0"){
+                            isAirOpen = false
+                            iv_air.setBackgroundResource(R.mipmap.ic_switch_close)
+                            tv_air.text = "分闸"
+                        }
+                        airCondAdapter.isGate = isAirOpen
                     }
-                    airCondAdapter.isGate = isAirOpen
+                    "有功功率" ->{
+                        airPower = it.tagValue.toDouble()
+                    }
                 }
             }
             ll_air_gate.visibility = View.VISIBLE
@@ -373,17 +376,22 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
             socketGateEntity = socketGateList[0]
             socketGateEntity.moduleControl.forEach {
                 //初始化插座总闸状态
-                if("开关状态" == it.name){
-                    if(it.tagValue == "1"){
-                        isSocketOpen = true
-                        iv_socket.setBackgroundResource(R.mipmap.ic_switch_open)
-                        tv_socket.text = "合闸"
-                        tv_socket_status.text = "工作中"
-                    }else if(it.tagValue == "0"){
-                        isSocketOpen = false
-                        iv_socket.setBackgroundResource(R.mipmap.ic_switch_close)
-                        tv_socket.text = "分闸"
-                        tv_socket_status.text = "待机中"
+                when(it.name){
+                    "开关状态" ->{
+                        if(it.tagValue == "1"){
+                            isSocketOpen = true
+                            iv_socket.setBackgroundResource(R.mipmap.ic_switch_open)
+                            tv_socket.text = "合闸"
+                            tv_socket_status.text = "工作中"
+                        }else if(it.tagValue == "0"){
+                            isSocketOpen = false
+                            iv_socket.setBackgroundResource(R.mipmap.ic_switch_close)
+                            tv_socket.text = "分闸"
+                            tv_socket_status.text = "待机中"
+                        }
+                    }
+                    "有功功率" ->{
+                        socketPower = it.tagValue.toDouble()
                     }
                 }
             }
@@ -403,17 +411,22 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
             bulbGateEntity = bulbGateList[0]
             bulbGateEntity.moduleControl.forEach {
                 //初始化照明总闸状态
-                if("开关状态" == it.name){
-                    if(it.tagValue == "1"){
-                        isBulbOpen = true
-                        iv_bulb.setBackgroundResource(R.mipmap.ic_switch_open)
-                        tv_bulb.text = "合闸"
-                        tv_bulb_status.text = "灯亮"
-                    }else if(it.tagValue == "0"){
-                        isBulbOpen = false
-                        iv_bulb.setBackgroundResource(R.mipmap.ic_switch_close)
-                        tv_bulb.text = "分闸"
-                        tv_bulb_status.text = "灯熄"
+                when(it.name){
+                    "开关状态" ->{
+                        if(it.tagValue == "1"){
+                            isBulbOpen = true
+                            iv_bulb.setBackgroundResource(R.mipmap.ic_switch_open)
+                            tv_bulb.text = "合闸"
+                            tv_bulb_status.text = "灯亮"
+                        }else if(it.tagValue == "0"){
+                            isBulbOpen = false
+                            iv_bulb.setBackgroundResource(R.mipmap.ic_switch_close)
+                            tv_bulb.text = "分闸"
+                            tv_bulb_status.text = "灯熄"
+                        }
+                    }
+                    "有功功率" ->{
+                        bulbPower = it.tagValue.toDouble()
                     }
                 }
             }
@@ -421,6 +434,16 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
         }else{
             ll_bulb_gate.visibility = View.GONE
         }
+
+        //获取房间总功率
+        val bg = BigDecimal(airPower + socketPower + bulbPower)
+        val totalPower: Double = bg.setScale(2, BigDecimal.ROUND_HALF_UP).toDouble()
+
+        //设置电量列表数据
+        electricList.add(ElectricEntity("今日电量(度)",data.todayEle))
+        electricList.add(ElectricEntity("当月电量(度)",data.monthEle))
+        electricList.add(ElectricEntity("当前功率(kw)",totalPower.toString()))
+        electricAdapter.notifyDataSetChanged()
     }
 
     //退出登录成功

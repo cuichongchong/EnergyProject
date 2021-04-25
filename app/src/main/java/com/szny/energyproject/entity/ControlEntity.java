@@ -16,7 +16,6 @@ public class ControlEntity {
 
     private String todayEle;
     private String monthEle;
-    private String currentPower;
     private List<DeviceListBean> deviceList;
 
     public String getTodayEle() {
@@ -33,14 +32,6 @@ public class ControlEntity {
 
     public void setMonthEle(String monthEle) {
         this.monthEle = monthEle;
-    }
-
-    public String getCurrentPower() {
-        return currentPower;
-    }
-
-    public void setCurrentPower(String currentPower) {
-        this.currentPower = currentPower;
     }
 
     public List<DeviceListBean> getDeviceList() {
