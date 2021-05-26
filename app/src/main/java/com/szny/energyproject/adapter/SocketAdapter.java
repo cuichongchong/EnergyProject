@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.szny.energyproject.R;
 import com.szny.energyproject.base.BaseRecyclerViewAdapter;
 import com.szny.energyproject.base.BaseViewHolder;

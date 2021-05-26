@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Message
 import android.view.KeyEvent
 import com.gyf.barlibrary.ImmersionBar
+import com.szny.energyproject.R
 import com.szny.energyproject.base.BaseActivity
 import com.szny.energyproject.constant.ConstantValues
 import com.szny.energyproject.utils.SPUtils
@@ -23,7 +24,7 @@ class SplashActivity : BaseActivity() {
             when (msg.what) {
                 1 ->
                     //前往首页
-                    mContext.startActivity(Intent(mContext, ControllerActivity::class.java))
+                    mContext.startActivity(Intent(mContext, HomeActivity::class.java))
                 2 ->
                     //前往登录页
                     mContext.startActivity(Intent(mContext, LoginActivity::class.java))
@@ -54,12 +55,6 @@ class SplashActivity : BaseActivity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        ImmersionBar.with(this).destroy()
-        mHandler.removeCallbacksAndMessages(null)
-    }
-
     override fun onPause() {
         super.onPause()
         finish()
@@ -68,5 +63,11 @@ class SplashActivity : BaseActivity() {
     override fun onStop() {
         super.onStop()
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ImmersionBar.with(this).destroy()
+        mHandler.removeCallbacksAndMessages(null)
     }
 }

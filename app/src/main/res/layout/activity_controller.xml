@@ -16,386 +16,304 @@
         android:background="@color/colorAccent"
         android:title="">
         <TextView
-            android:id="@+id/tv_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text=""
-            android:textSize="16sp"
-            android:textColor="@color/colorWhite"/>
-        <TextView
             android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@color/colorWhite"
             android:textSize="18sp" />
-        <ImageView
-            android:id="@+id/iv_about"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginEnd="12dp"
-            android:src="@mipmap/ic_about"/>
     </androidx.appcompat.widget.Toolbar>
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/srl"
+    <!--    <com.scwang.smartrefresh.layout.SmartRefreshLayout-->
+    <!--        android:id="@+id/srl"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@+id/toolbar"-->
+    <!--        app:srlDragRate="1">-->
+
+    <!--        <com.scwang.smartrefresh.header.MaterialHeader-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"/>-->
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
-        app:srlDragRate="1">
+        android:fillViewport="true">
 
-        <com.scwang.smartrefresh.header.MaterialHeader
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fillViewport="true">
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:padding="10dp"
+                android:background="@drawable/white_shape">
+                <TextView
+                    android:id="@+id/tv_room"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="房间"
+                    android:textSize="16sp"
+                    android:textColor="@color/color_111111"/>
+
+                <com.szny.energyproject.widget.SearchableSpinner
+                    android:id="@+id/search_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/spinner_style"
+                    android:layout_toEndOf="@+id/tv_room"
+                    android:layout_marginStart="5dp"/>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp">
 
-                <RelativeLayout
+                <!--空调列表展示-->
+                <LinearLayout
+                    android:id="@+id/ll_air"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorAccent"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp">
+                    android:orientation="vertical">
                     <TextView
-                        android:id="@+id/tv_address"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_centerHorizontal="true"
-                        android:singleLine="true"
-                        android:text=""
-                        android:textColor="@color/colorWhite"
-                        android:textSize="18sp"/>
-                    <TextView
-                        android:id="@+id/tv_room"
-                        android:layout_width="wrap_content"
+                        android:drawablePadding="4dp"
+                        android:text="空调"
+                        android:textColor="@color/color_111111"
+                        android:textSize="16sp"
+                        app:drawableLeftCompat="@mipmap/ic_air" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_air_conditioner"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_address"
-                        android:layout_centerHorizontal="true"
-                        android:text=""
-                        android:textColor="@color/colorWhite"
-                        android:textSize="21sp"/>
-                    <ImageView
-                        android:id="@+id/iv_change"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_address"
-                        android:src="@mipmap/ic_change"
-                        android:padding="5dp"
-                        android:layout_toEndOf="@+id/tv_room"/>
-                </RelativeLayout>
+                        android:layout_marginTop="5dp"
+                        android:overScrollMode="never"/>
+                </LinearLayout>
 
+                <!--插座列表展示-->
+                <LinearLayout
+                    android:id="@+id/ll_socket"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="4dp"
+                        android:text="插座"
+                        android:textColor="@color/color_111111"
+                        android:textSize="16sp"
+                        app:drawableLeftCompat="@mipmap/ic_socket" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_socket"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:overScrollMode="never"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="4dp"
+                    android:text="控制"
+                    android:textColor="@color/color_111111"
+                    android:textSize="16sp"
+                    app:drawableLeftCompat="@mipmap/ic_control" />
+
+                <LinearLayout
+                    android:id="@+id/ll_bulb_gate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/white_shape"
+                    android:layout_marginTop="5dp"
+                    android:padding="10dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="照明总闸"
+                        android:textSize="16sp"
+                        android:textColor="@color/color_333333"/>
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tv_bulb"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="4dp"
+                            android:text="分闸"
+                            android:textSize="16sp"
+                            android:textColor="@color/color_1790FF"/>
+                        <ImageView
+                            android:id="@+id/iv_bulb"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@mipmap/ic_switch_close"
+                            android:layout_marginStart="5dp"
+                            android:layout_toEndOf="@+id/tv_bulb"/>
+                    </RelativeLayout>
+                    <TextView
+                        android:id="@+id/tv_bulb_status"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text=""
+                        android:textSize="16sp"
+                        android:textColor="@color/color_1790FF"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_socket_gate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/white_shape"
+                    android:layout_marginTop="5dp"
+                    android:padding="10dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="插座总闸"
+                        android:textSize="16sp"
+                        android:textColor="@color/color_333333"/>
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tv_socket"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="4dp"
+                            android:text="分闸"
+                            android:textSize="16sp"
+                            android:textColor="@color/color_1790FF"/>
+                        <ImageView
+                            android:id="@+id/iv_socket"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@mipmap/ic_switch_close"
+                            android:layout_marginStart="5dp"
+                            android:layout_toEndOf="@+id/tv_socket"/>
+                    </RelativeLayout>
+                    <TextView
+                        android:id="@+id/tv_socket_status"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal"
+                        android:text=""
+                        android:textSize="16sp"
+                        android:textColor="@color/color_1790FF"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_air_gate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/white_shape"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="15dp"
+                    android:padding="10dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="空调总闸"
+                        android:textSize="16sp"
+                        android:textColor="@color/color_333333"/>
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/tv_air"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="4dp"
+                            android:text="分闸"
+                            android:textSize="16sp"
+                            android:textColor="@color/color_1790FF"/>
+                        <ImageView
+                            android:id="@+id/iv_air"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@mipmap/ic_switch_close"
+                            android:layout_marginStart="5dp"
+                            android:layout_toEndOf="@+id/tv_air"/>
+                    </RelativeLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=""/>
+                </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:drawablePadding="4dp"
-                            android:text="电量"
-                            android:textColor="@color/color_111111"
-                            android:textSize="15sp"
-                            app:drawableLeftCompat="@mipmap/ic_electric" />
-                        <TextView
-                            android:id="@+id/tv_more"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:text="更多查询"
-                            android:textSize="14sp"
-                            app:drawableRightCompat="@mipmap/ic_more" />
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rv_electric"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="25dp"
-                            android:background="@drawable/white_shape"
-                            android:overScrollMode="never"/>
-                    </RelativeLayout>
-
-                    <!--空调列表展示-->
-                    <LinearLayout
-                        android:id="@+id/ll_air"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:drawablePadding="4dp"
-                            android:text="空调"
-                            android:textColor="@color/color_111111"
-                            android:textSize="15sp"
-                            app:drawableLeftCompat="@mipmap/ic_air" />
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rv_air_conditioner"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:overScrollMode="never"/>
-                    </LinearLayout>
-
-                    <!--插座列表展示-->
-                    <LinearLayout
-                        android:id="@+id/ll_socket"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:drawablePadding="4dp"
-                            android:text="插座"
-                            android:textColor="@color/color_111111"
-                            android:textSize="15sp"
-                            app:drawableLeftCompat="@mipmap/ic_socket" />
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rv_socket"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:overScrollMode="never"/>
-                    </LinearLayout>
-
+                    android:orientation="horizontal"
+                    android:background="@drawable/white_shape"
+                    android:layout_marginTop="5dp"
+                    android:padding="15dp"
+                    android:visibility="gone">
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:drawablePadding="4dp"
-                        android:text="控制"
-                        android:textColor="@color/color_111111"
-                        android:textSize="15sp"
-                        app:drawableLeftCompat="@mipmap/ic_control" />
-
-                    <LinearLayout
-                        android:id="@+id/ll_bulb_gate"
-                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:text="入户总闸"
+                        android:textSize="16sp"
+                        android:textColor="@color/color_333333"
+                        app:drawableLeftCompat="@mipmap/ic_master_switch" />
+                    <RelativeLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@drawable/white_shape"
-                        android:layout_marginTop="5dp"
-                        android:padding="10dp">
+                        android:layout_weight="1"
+                        android:gravity="center">
                         <TextView
-                            android:layout_width="0dp"
+                            android:id="@+id/tv_master"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="照明总闸"
-                            android:textSize="16sp"
-                            android:textColor="@color/color_333333"/>
-                        <RelativeLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center">
-                            <TextView
-                                android:id="@+id/tv_bulb"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingTop="4dp"
-                                android:text="分闸"
-                                android:textSize="16sp"
-                                android:textColor="@color/color_1790FF"/>
-                            <ImageView
-                                android:id="@+id/iv_bulb"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@mipmap/ic_switch_close"
-                                android:layout_marginStart="5dp"
-                                android:layout_toEndOf="@+id/tv_bulb"/>
-                        </RelativeLayout>
-                        <TextView
-                            android:id="@+id/tv_bulb_status"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text=""
+                            android:paddingTop="4dp"
+                            android:text="分闸"
                             android:textSize="16sp"
                             android:textColor="@color/color_1790FF"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ll_socket_gate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@drawable/white_shape"
-                        android:layout_marginTop="5dp"
-                        android:padding="10dp">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="插座总闸"
-                            android:textSize="16sp"
-                            android:textColor="@color/color_333333"/>
-                        <RelativeLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center">
-                            <TextView
-                                android:id="@+id/tv_socket"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingTop="4dp"
-                                android:text="分闸"
-                                android:textSize="16sp"
-                                android:textColor="@color/color_1790FF"/>
-                            <ImageView
-                                android:id="@+id/iv_socket"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@mipmap/ic_switch_close"
-                                android:layout_marginStart="5dp"
-                                android:layout_toEndOf="@+id/tv_socket"/>
-                        </RelativeLayout>
-                        <TextView
-                            android:id="@+id/tv_socket_status"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center_horizontal"
-                            android:text=""
-                            android:textSize="16sp"
-                            android:textColor="@color/color_1790FF"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/ll_air_gate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@drawable/white_shape"
-                        android:layout_marginTop="5dp"
-                        android:padding="10dp">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="空调总闸"
-                            android:textSize="16sp"
-                            android:textColor="@color/color_333333"/>
-                        <RelativeLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center">
-                            <TextView
-                                android:id="@+id/tv_air"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingTop="4dp"
-                                android:text="分闸"
-                                android:textSize="16sp"
-                                android:textColor="@color/color_1790FF"/>
-                            <ImageView
-                                android:id="@+id/iv_air"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@mipmap/ic_switch_close"
-                                android:layout_marginStart="5dp"
-                                android:layout_toEndOf="@+id/tv_air"/>
-                        </RelativeLayout>
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text=""/>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:background="@drawable/white_shape"
-                        android:layout_marginTop="5dp"
-                        android:padding="15dp"
-                        android:visibility="gone">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="入户总闸"
-                            android:textSize="16sp"
-                            android:textColor="@color/color_333333"
-                            app:drawableLeftCompat="@mipmap/ic_master_switch" />
-                        <RelativeLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center">
-                            <TextView
-                                android:id="@+id/tv_master"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:paddingTop="4dp"
-                                android:text="分闸"
-                                android:textSize="16sp"
-                                android:textColor="@color/color_1790FF"/>
-                            <ImageView
-                                android:id="@+id/iv_master"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@mipmap/ic_switch_close"
-                                android:layout_marginStart="5dp"
-                                android:layout_toEndOf="@+id/tv_master"/>
-                        </RelativeLayout>
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text=""/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="12dp"
-                        android:orientation="vertical">
-                        <TextView
+                        <ImageView
+                            android:id="@+id/iv_master"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="友情提示:"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="1.如有疑问,可拨打售后技术服务电话。"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="2.支持预约上门有偿安装。"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="3.售后服务电话:65900600。"/>
-                    </LinearLayout>
+                            android:background="@mipmap/ic_switch_close"
+                            android:layout_marginStart="5dp"
+                            android:layout_toEndOf="@+id/tv_master"/>
+                    </RelativeLayout>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text=""/>
                 </LinearLayout>
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+    <!--    </com.scwang.smartrefresh.layout.SmartRefreshLayout>-->
 
 </RelativeLayout>

@@ -3,14 +3,11 @@ package com.szny.energyproject.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.szny.energyproject.R;
-
 
 public class Loading extends Dialog {
 

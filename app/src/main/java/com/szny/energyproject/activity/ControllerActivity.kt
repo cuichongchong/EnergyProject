@@ -1,59 +1,50 @@
 package com.szny.energyproject.activity
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
+import android.util.Log
 import android.view.View
-import android.widget.RelativeLayout
-import android.widget.TextView
-import androidx.recyclerview.widget.GridLayoutManager
+import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bigkoo.pickerview.builder.OptionsPickerBuilder
-import com.bigkoo.pickerview.listener.OnOptionsSelectListener
-import com.bigkoo.pickerview.view.OptionsPickerView
 import com.google.gson.Gson
 import com.gyf.barlibrary.ImmersionBar
 import com.scwang.smartrefresh.layout.api.RefreshLayout
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener
 import com.szny.energyproject.R
 import com.szny.energyproject.adapter.AirCondAdapter
-import com.szny.energyproject.adapter.ElectricAdapter
 import com.szny.energyproject.adapter.SocketAdapter
 import com.szny.energyproject.base.BaseActivity
 import com.szny.energyproject.base.RecyclerViewDivider
-import com.szny.energyproject.constant.ConstantValues
-import com.szny.energyproject.entity.*
+import com.szny.energyproject.entity.ControlEntity
+import com.szny.energyproject.entity.MessageBean
+import com.szny.energyproject.entity.RoomEntity
 import com.szny.energyproject.mvp.exceptions.BaseException
 import com.szny.energyproject.mvp.iviews.IControlView
 import com.szny.energyproject.mvp.persenters.ControlPresenter
 import com.szny.energyproject.utils.DensityUtil
 import com.szny.energyproject.utils.LogUtils
-import com.szny.energyproject.utils.SPUtils
 import com.szny.energyproject.utils.ToastUtils
 import com.szny.energyproject.widget.CommonDialog
+import com.szny.energyproject.widget.SearchableSpinner
 import com.szny.energyproject.widget.SignalRManager
 import kotlinx.android.synthetic.main.activity_controller.*
 import java.math.BigDecimal
 
 /**
- * 控制管理页面
+ * 实时控制页面
  * */
 class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListener,IControlView {
 
-    private lateinit var electricAdapter:ElectricAdapter
-    private lateinit var electricList:MutableList<ElectricEntity>
-
     private lateinit var airCondAdapter:AirCondAdapter
-
     private lateinit var socketAdapter:SocketAdapter
 
     private var dialog: CommonDialog? = null
 
+    //用户id
+    private var userId = 0
+
     //房间选择器
     private var mRoomList = arrayListOf<String>()
-    private var mRoomPickerView: OptionsPickerView<*>? = null
-    private var roomId = 0
 
     //初始化空调开关状态
     private var isAirOpen = false
@@ -63,11 +54,6 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
     private var isSocketOpen = false
     //初始化商铺总开关状态,只有商品角色进来时才有
     private var isShopOpen = false
-
-    //用户信息实体
-    private lateinit var userEntity:UserEntity
-    //房间列表实体
-    private lateinit var roomList:MutableList<RoomEntity>
 
     //空调总闸实体
     private lateinit var airGateList:MutableList<ControlEntity.DeviceListBean>
@@ -106,7 +92,9 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
     }
 
     private fun initView() {
-        toolbar_title.text = "房间管理"
+        toolbar.setNavigationIcon(R.mipmap.ic_back_white)
+        toolbar.setNavigationOnClickListener { view: View? -> finish() }
+        toolbar_title.text = "实时控制"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val tbLinearParams = toolbar.layoutParams //取控件textView当前的布局参数
             toolbar.setPadding(0, DensityUtil.dip2px(this, 20f),                                                                 0, 0)//4个参数按顺序分别是左上右下
@@ -121,11 +109,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
     }
 
     private fun initEvent() {
-        srl.setOnRefreshListener(this)
-        iv_about.setOnClickListener(this)
-        tv_more.setOnClickListener(this)
-        tv_name.setOnClickListener(this)
-        iv_change.setOnClickListener(this)
+        //srl.setOnRefreshListener(this)
         iv_bulb.setOnClickListener(this)
         iv_socket.setOnClickListener(this)
         iv_air.setOnClickListener(this)
@@ -133,14 +117,11 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
     }
 
     private fun initData() {
-        //获取用户信息
-        presenter.userInfo()
+        //接收userId
+        userId = intent.getIntExtra("userId", 0)
 
-        //电量列表
-        electricList = arrayListOf()
-        electricAdapter = ElectricAdapter(electricList)
-        rv_electric.layoutManager = GridLayoutManager(mContext, 3)
-        rv_electric.adapter = electricAdapter
+        //获取房间列表
+        presenter.getRoomList(userId)
 
         //空调列表
         airList = arrayListOf()
@@ -160,9 +141,6 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
         rv_socket.adapter = socketAdapter
 
         setUpListener()
-
-        //初始化房间选择器
-        initRoomOptionPicker()
     }
 
     //初始化signal
@@ -204,8 +182,6 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
 
     //下拉刷新回调
     override fun onRefresh(refreshlayout: RefreshLayout) {
-        //获取用户信息
-        presenter.userInfo()
     }
 
     //写控制writeSignal方法
@@ -240,51 +216,42 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
         }
     }
 
-    //获取用户信息成功返回
-    override fun success(t: UserEntity) {
-        srl.finishRefresh()
-
-        this.userEntity = t
-        //设置单位名称
-        tv_address.text = t.remark
-
-        //设置用户名
-        tv_name.text = t.userName
-
-        //获取房间列表
-        presenter.getRoomList(t.id)
-    }
-
     //房间列表获取成功
-    override fun getRoomList(data: MutableList<RoomEntity>) {
-        this.roomList = data
+    override fun success(data: MutableList<RoomEntity>) {
         if(data.size > 0){
-            //默认显示第一个
-            tv_room.text = data[0].name
-
-            //获取roomId
-            this.roomId = data[0].id
-
             //请求获取首页信息接口
-            presenter.getInfo(this.userEntity.id,data[0].id)
+            presenter.getInfo(userId,data[data.size-1].id)
+            //presenter.getInfo(userId,data[0].id)
 
-            //一个房间时隐藏选择下拉
-            if(data.size == 1){
-                iv_change.visibility = View.GONE
-            }else{
-                iv_change.visibility = View.VISIBLE
-            }
             //设置房间列表选择数据
             mRoomList.clear()
-            for(item in data){
+            /*for(item in data){
                 mRoomList.add(item.name)
+            }*/
+            for (i in data.indices.reversed()) {
+                mRoomList.add(data[i].name)
             }
+            val adapter = ArrayAdapter<String>(this, R.layout.item_spinner)
+            adapter.addAll(mRoomList)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            search_spinner.adapter = adapter
+            search_spinner.setTitle("选择房间")
+            search_spinner.setPositiveButton("关闭")
+            search_spinner.setOnSearchableItemClickListener(
+                SearchableSpinner.SearchableItem<String> { item: Any ->
+                    Log.e("doing","选择了 $item")
+                    for (entity in data){
+                        if(item == entity.name){
+                            presenter.getInfo(userId,entity.id)
+                        }
+                    }
+                } as SearchableSpinner.SearchableItem<*>
+            )
         }
     }
 
     //首页信息成功
     override fun getInfo(data: ControlEntity) {
-        electricAdapter.clearAllData()
         airGateList = arrayListOf()
         airCondAdapter.clearAllData()
         socketGateList = arrayListOf()
@@ -439,40 +406,10 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
         val bg = BigDecimal(airPower + socketPower + bulbPower)
         val totalPower: Double = bg.setScale(2, BigDecimal.ROUND_HALF_UP).toDouble()
 
-        //设置电量列表数据
-        electricList.add(ElectricEntity("今日电量(度)",data.todayEle))
-        electricList.add(ElectricEntity("当月电量(度)",data.monthEle))
-        electricList.add(ElectricEntity("当前功率(kw)",totalPower.toString()))
-        electricAdapter.notifyDataSetChanged()
-    }
-
-    //退出登录成功
-    override fun logout(data: LogoutEntity) {
-        //清除登录状态和token缓存
-        SPUtils.getInstance().remove(ConstantValues.LOGIN_SUCCESS)
-        SPUtils.getInstance().remove(ConstantValues.TOKEN)
-        //返回登录页面
-        startActivity(Intent(mContext,LoginActivity::class.java))
-        //关闭当前页面
-        this.finish()
     }
 
     override fun onClick(view: View) {
         when(view.id){
-            R.id.tv_name ->{
-                logOut()
-            }
-            R.id.iv_about ->{
-                toAbout()
-            }
-            R.id.iv_change ->{
-                mRoomPickerView?.show()
-            }
-            R.id.tv_more ->{
-                startActivity(Intent(this, DataActivity::class.java)
-                    .putExtra("roomId",this.roomId))
-
-            }
             //照明总闸开关切换
             R.id.iv_bulb ->{
                 if(isBulbOpen){
@@ -864,115 +801,13 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
             .show()
     }
 
-    //初始化房间选择器
-    private fun initRoomOptionPicker() {
-        mRoomPickerView = OptionsPickerBuilder(this,
-            OnOptionsSelectListener { option1, _, _, _ -> //返回的分别是三个级别的选中位置
-                val tx: String? = mRoomList[option1]
-                tv_room.text = tx
-                for (item in this.roomList){
-                    if(tx == item.name){
-                        //更新roomId
-                        this.roomId = item.id
-                        presenter.getInfo(this.userEntity.id,item.id)
-                    }
-                }
-            })
-            .setDecorView(findViewById<RelativeLayout>(R.id.activity_rootview)) //必须是RelativeLayout，不设置setDecorView的话，底部虚拟导航栏会显示在弹出的选择器区域
-            .setCancelText("取消") //取消按钮文字
-            .setCancelColor(resources.getColor(R.color.color_111111)) //取消按钮文字颜色
-            .setSubmitText("完成") //确认按钮文字
-            .setSubmitColor(resources.getColor(R.color.color_1790FF)) //确定按钮文字颜色
-            .setContentTextSize(16) //滚轮文字大小
-            .setTextColorCenter(resources.getColor(R.color.color_111111)) //设置选中文本的颜色值
-            .setLineSpacingMultiplier(2.2f) //行间距
-            .setDividerColor(resources.getColor(R.color.color_e8e8e8)) //设置分割线的颜色
-            .setSelectOptions(0) //设置选择的值
-            .setLayoutRes(
-                R.layout.item_picker_room
-            ) { v ->
-                val tvFinish = v.findViewById<TextView>(R.id.tv_finish)
-                tvFinish.setOnClickListener {
-                    mRoomPickerView!!.returnData()
-                    mRoomPickerView!!.dismiss()
-                }
-            }
-            .build<Any>()
-        (mRoomPickerView as OptionsPickerView<Any>?)!!.setPicker(mRoomList as List<Any>?)
-    }
-
-    //关于弹框
-    private fun toAbout() {
-        if (dialog == null) {
-            dialog = CommonDialog(mContext)
-        }
-        dialog!!.setMessage("1.技术支持:河南省省直能源实业有限公司.\n2.Copyright © 2019 - 2021 河南省省直能源实业有限公司 版权所有.")
-            .setTitle("关于")
-            .setSingle(true)
-            .setNegtive("确认")
-            .setOnClickBottomListener(object : CommonDialog.OnClickBottomListener {
-                override fun onPositiveClick() {
-                    dialog!!.dismiss()
-                }
-                override fun onNegtiveClick() {
-                    dialog!!.dismiss()
-                }
-            })
-            .show()
-    }
-
-    //退出登录
-    private fun logOut() {
-        if (dialog == null) {
-            dialog = CommonDialog(mContext)
-        }
-        dialog!!.setMessage("确认退出登录?")
-            .setTitle("提示")
-            .setSingle(false)
-            .setPositive("确认")
-            .setNegtive("取消")
-            .setOnClickBottomListener(object : CommonDialog.OnClickBottomListener {
-                override fun onPositiveClick() {
-                    dialog!!.dismiss()
-                    presenter.logout(SPUtils.getInstance().getString(ConstantValues.TOKEN,""))
-                }
-
-                override fun onNegtiveClick() {
-                    dialog!!.dismiss()
-                }
-            })
-            .show()
-    }
-
     override fun failed(e: Throwable) {
-        srl.finishRefresh()
+        //srl.finishRefresh()
         //token失效，返回登录页面
         if(e is BaseException && e.errCode == 113){
             ToastUtils.showShort(mContext,"验证失效,请重新登录")
         }else{
             ToastUtils.showShort(mContext,"请求失败")
-        }
-    }
-
-    /**
-     * 按两次退出
-     */
-    private var exitTime: Long = 0
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            oneKeyExit()
-            return false
-        }
-        return super.onKeyDown(keyCode, event)
-    }
-
-    private fun oneKeyExit() {
-        if (System.currentTimeMillis() - exitTime > 2000) {
-            ToastUtils.showShort(mContext,"再按一次退出")
-            exitTime = System.currentTimeMillis()
-        } else {
-            finish()
         }
     }
 

@@ -1,16 +1,16 @@
 package com.szny.energyproject.widget;
 
 import android.graphics.Color;
-
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +38,9 @@ public class BarChartManager {
         mBarChart.getDescription().setEnabled(false);
         mBarChart.setMaxVisibleValueCount(40);
         // X,Y轴同时缩放，false则X,Y轴单独缩放,默认false
-        mBarChart.setPinchZoom(false);
+        //mBarChart.setPinchZoom(false);
+        mBarChart.setScaleXEnabled(false);//支持x轴缩放
+        mBarChart.setScaleYEnabled(false);//禁止y轴缩放
         //是否显示网格背景
         mBarChart.setDrawGridBackground(false);
         //显示每条背景阴影
@@ -68,29 +70,32 @@ public class BarChartManager {
     /**
      * 展示条形堆叠图
      * */
-    public void showBarChart(List<BarEntry> yVals, String label,String[] stackLabels){
+    public void showBarChart(List<BarEntry> vals,String label,String[] stackLabels,List<String> dataList){
         initChart();
 
         BarDataSet set;
-        if (mBarChart.getData() != null && mBarChart.getData().getDataSetCount() > 0) {
-            set = (BarDataSet) mBarChart.getData().getDataSetByIndex(0);
-            set.setValues(yVals);
-            mBarChart.getData().notifyDataChanged();
-            mBarChart.notifyDataSetChanged();
-        }else{
-            set = new BarDataSet(yVals,label);
-            set.setColors(getColors());
-            set.setStackLabels(stackLabels);
+        set = new BarDataSet(vals,label);
+        set.setColors(getColors());
+        set.setStackLabels(stackLabels);
+        //隐藏顶点数值
+        set.setDrawValues(false);
 
-            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-            dataSets.add(set);
+        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+        dataSets.add(set);
 
-            BarData data = new BarData(dataSets);
-            data.setValueTextColor(Color.WHITE);
+        BarData data = new BarData(dataSets);
+        data.setValueTextColor(Color.WHITE);
 
-            mBarChart.setData(data);
-        }
+        //格式化x轴显示的值
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getAxisLabel(float value, AxisBase axis) {
+                return dataList.get((int)value);
+            }
+        });
 
+        mBarChart.clear();
+        mBarChart.setData(data);
         mBarChart.setFitBars(true);
         mBarChart.invalidate();
     }
@@ -99,10 +104,8 @@ public class BarChartManager {
         int stacksize = 3;
         //有尽可能多的颜色每项堆栈值
         int[] colors = new int[stacksize];
-        int[] MATERIAL_COLORS = {rgb("#FFD866"),rgb("#93C37E"),rgb("#74A6AD")};
-        for (int i = 0; i < colors.length; i++) {
-            colors[i] = MATERIAL_COLORS[i];
-        }
+        int[] MATERIAL_COLORS = {rgb("#42aafc"),rgb("#32d3eb"),rgb("#5bc49f")};
+        System.arraycopy(MATERIAL_COLORS, 0, colors, 0, colors.length);
         return colors;
     }
 

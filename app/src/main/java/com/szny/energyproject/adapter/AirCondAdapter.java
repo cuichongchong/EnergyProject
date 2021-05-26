@@ -5,13 +5,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.widget.SwitchCompat;
-
 import com.szny.energyproject.R;
 import com.szny.energyproject.base.BaseRecyclerViewAdapter;
 import com.szny.energyproject.base.BaseViewHolder;
 import com.szny.energyproject.entity.ControlEntity;
 import com.szny.energyproject.utils.ToastUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 

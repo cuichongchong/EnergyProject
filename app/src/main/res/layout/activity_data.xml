@@ -12,43 +12,22 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:background="@color/colorWhite"
+        android:background="@color/colorAccent"
         android:minHeight="44dp"
         android:title="">
-
         <TextView
             android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="@color/color_111111"
+            android:textColor="@color/colorWhite"
             android:textSize="17sp" />
-
-        <ImageView
-            android:id="@+id/iv_choose_time"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:layout_marginRight="12dp"
-            android:src="@mipmap/ic_choose_time" />
-
     </androidx.appcompat.widget.Toolbar>
-
-    <TextView
-        android:id="@+id/tv_current_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:text=""
-        android:textSize="15sp"
-        android:textColor="@color/color_111111"/>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tv_current_time"
+        android:layout_below="@+id/toolbar"
         android:fillViewport="true">
         <LinearLayout
             android:layout_width="match_parent"
@@ -58,11 +37,130 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp">
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/white_shape">
+                <TextView
+                    android:id="@+id/tv_room"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginStart="8dp"
+                    android:text="房间"
+                    android:textSize="16sp"
+                    android:textColor="@color/color_111111"/>
+                <com.szny.energyproject.widget.SearchableSpinner
+                    android:id="@+id/search_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    style="@style/spinner_style"
+                    android:layout_toEndOf="@+id/tv_room"
+                    android:layout_marginStart="5dp"/>
+                <TextView
+                    android:id="@+id/tv_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/search_spinner"
+                    android:layout_marginTop="21dp"
+                    android:layout_marginStart="8dp"
+                    android:text="日期"
+                    android:textSize="16sp"
+                    android:textColor="@color/color_111111"/>
+                <TextView
+                    android:id="@+id/tv_current_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/tv_time"
+                    android:layout_below="@+id/search_spinner"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:background="@mipmap/spinner_style"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:textColor="@color/color_111111"/>
+            </RelativeLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:drawableLeftCompat="@mipmap/ic_elec"
                 android:drawablePadding="4dp"
-                android:text="柱状堆叠图"
+                android:layout_marginTop="5dp"
+                android:text="电量"
+                android:textColor="@color/color_111111"
+                android:textSize="16sp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
+                android:background="@drawable/white_shape">
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1">
+                    <TextView
+                        android:id="@+id/tv1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="今日电量(度)"
+                        android:textSize="17sp"
+                        android:textColor="@color/color_333333"/>
+                    <TextView
+                        android:id="@+id/tv_todayEle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tv1"
+                        android:layout_marginTop="15dp"
+                        android:layout_centerHorizontal="true"
+                        android:text=""
+                        android:textSize="17sp"
+                        android:textColor="@color/color_333333"/>
+                </RelativeLayout>
+                <View
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/divider_color"/>
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1">
+                    <TextView
+                        android:id="@+id/tv2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="当月电量(度)"
+                        android:textSize="17sp"
+                        android:textColor="@color/color_333333"/>
+                    <TextView
+                        android:id="@+id/tv_monthEle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tv2"
+                        android:layout_marginTop="15dp"
+                        android:layout_centerHorizontal="true"
+                        android:text=""
+                        android:textSize="17sp"
+                        android:textColor="@color/color_333333"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:drawablePadding="4dp"
+                android:text="用能堆叠图"
                 android:textColor="@color/color_111111"
                 android:textSize="16sp"
                 app:drawableLeftCompat="@mipmap/ic_electric" />
@@ -71,24 +169,7 @@
                 android:id="@+id/mBarChart"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:layout_marginTop="3dp"
-                android:background="@drawable/white_shape"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:drawablePadding="0dp"
-                android:text="饼图"
-                android:textColor="@color/color_111111"
-                android:textSize="16sp"
-                app:drawableLeftCompat="@mipmap/ic_piechart" />
-
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/mPieChart"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/white_shape"/>
 
             <TextView
@@ -96,7 +177,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:drawablePadding="5dp"
-                android:text="数据"
+                android:text="用能数据"
                 android:textColor="@color/color_111111"
                 android:textSize="16sp"
                 app:drawableLeftCompat="@mipmap/ic_data" />
@@ -106,17 +187,13 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="6dp"
-                android:layout_marginStart="6dp"
                 android:layout_marginBottom="15dp"
                 android:background="@drawable/white_shape">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginTop="5dp">
-
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -158,14 +235,12 @@
                         android:textSize="13sp"
                         android:textColor="#333333"/>
                 </LinearLayout>
-
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_data"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
                     tools:listitem="@layout/item_data"/>
-
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

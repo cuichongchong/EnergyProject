@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.szny.energyproject.base.BaseEntity;
 import com.szny.energyproject.constant.ConstantValues;
 import com.szny.energyproject.constant.UrlHelper;
+import com.szny.energyproject.entity.CarbonEntity;
 import com.szny.energyproject.entity.ControlEntity;
 import com.szny.energyproject.entity.DataEntity;
 import com.szny.energyproject.entity.LogoutEntity;
@@ -98,7 +99,6 @@ public class RetrofitManager {
     }
 
     public interface InternetService{
-
         //登录
         @FormUrlEncoded
         @POST("auth/oauth/token")
@@ -128,6 +128,10 @@ public class RetrofitManager {
         //获取数据信息
         @POST("api/client/analysis/getReport")
         Observable<BaseEntity<List<DataEntity>>> getReport(@Body RequestBody requestBody);
+
+        //获取房间碳排放量
+        @POST("api/display/data/carbon")
+        Observable<BaseEntity<List<CarbonEntity>>> getCarbon(@Body RequestBody requestBody);
     }
 
 }

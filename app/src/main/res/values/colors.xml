@@ -21,9 +21,8 @@
     <color name="color_e8e8e8">#E8E8E8</color>
 
     <!--饼状图颜色-->
-    <color name="color1">#73DFA4</color>
-    <color name="color2">#50E0F3</color>
-    <color name="color3">#1790FF</color>
-    <color name="color4">#ED8BFF</color>
+    <color name="color1">#42aafc</color>
+    <color name="color2">#32d3eb</color>
+    <color name="color3">#5bc49f</color>
 
 </resources>

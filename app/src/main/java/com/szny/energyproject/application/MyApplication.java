@@ -2,7 +2,8 @@ package com.szny.energyproject.application;
 
 import android.app.Application;
 import android.content.Context;
-
+import com.bumptech.glide.request.target.ViewTarget;
+import com.szny.energyproject.R;
 import com.szny.energyproject.utils.LogUtils;
 import com.szny.energyproject.utils.SPUtils;
 
@@ -14,6 +15,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
+
+        ViewTarget.setTagId(R.id.glide_tag);
 
         //初始化sp
         SPUtils.getInstance().init(this);

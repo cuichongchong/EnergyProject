@@ -2,12 +2,10 @@ package com.szny.energyproject.adapter;
 
 import android.content.Context;
 import android.widget.TextView;
-
 import com.szny.energyproject.R;
 import com.szny.energyproject.base.BaseRecyclerViewAdapter;
 import com.szny.energyproject.base.BaseViewHolder;
 import com.szny.energyproject.entity.DataEntity;
-
 import java.util.List;
 
 /**

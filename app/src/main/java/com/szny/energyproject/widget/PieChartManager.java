@@ -2,7 +2,6 @@ package com.szny.energyproject.widget;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;

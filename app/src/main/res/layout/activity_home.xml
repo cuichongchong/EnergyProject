@@ -1,18 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/color_f5f5f5"
     tools:context=".activity.HomeActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:minHeight="44dp"
+        android:background="@color/colorAccent"
+        android:title="">
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text=""
+            android:textSize="16sp"
+            android:textColor="@color/colorWhite"/>
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp" />
+        <ImageView
+            android:id="@+id/iv_about"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginEnd="12dp"
+            android:src="@mipmap/ic_about"/>
+    </androidx.appcompat.widget.Toolbar>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.jude.rollviewpager.RollPagerView
+        android:id="@+id/rollPager"
+        android:layout_width="match_parent"
+        android:layout_height="215dp"
+        android:layout_below="@+id/toolbar"
+        android:focusableInTouchMode="true"
+        android:focusable="true">
+    </com.jude.rollviewpager.RollPagerView>
+
+    <LinearLayout
+        android:id="@+id/ll_one"
+        android:layout_width="match_parent"
+        android:layout_height="85dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/rollPager"
+        android:background="@color/colorWhite"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_control"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            app:drawableEndCompat="@mipmap/ic_into"
+            app:drawableStartCompat="@mipmap/ic_home_control"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="实时控制"
+            android:textColor="@color/color_333333"
+            android:textSize="17sp"/>
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/divider_color"/>
+
+        <TextView
+            android:id="@+id/tv_statis"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            app:drawableEndCompat="@mipmap/ic_into"
+            app:drawableStartCompat="@mipmap/ic_home_statis"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:layout_weight="1"
+            android:text="能耗统计"
+            android:textColor="@color/color_333333"
+            android:textSize="17sp"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/ll_one"
+        android:background="@color/divider_color"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="85dp"
+        android:background="@color/colorWhite"
+        android:gravity="center"
+        android:layout_below="@+id/view"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_analys"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            app:drawableEndCompat="@mipmap/ic_into"
+            app:drawableStartCompat="@mipmap/ic_home_analys"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="能耗分析"
+            android:textColor="@color/color_333333"
+            android:textSize="17sp"/>
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/divider_color"/>
+
+        <TextView
+            android:id="@+id/tv_co2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            app:drawableEndCompat="@mipmap/ic_into"
+            app:drawableStartCompat="@mipmap/ic_home_co2"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:layout_weight="1"
+            android:text="碳排放量"
+            android:textColor="@color/color_333333"
+            android:textSize="17sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="友情提示:"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="1.如有疑问,可拨打技术服务电话."/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="2.服务电话:65900786."/>
+    </LinearLayout>
+</RelativeLayout>

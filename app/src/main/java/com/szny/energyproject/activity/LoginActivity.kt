@@ -11,7 +11,6 @@ import com.szny.energyproject.R
 import com.szny.energyproject.base.BaseActivity
 import com.szny.energyproject.constant.ConstantValues
 import com.szny.energyproject.entity.LoginEntity
-import com.szny.energyproject.entity.LogoutEntity
 import com.szny.energyproject.mvp.iviews.ILoginView
 import com.szny.energyproject.mvp.persenters.LoginPresenter
 import com.szny.energyproject.utils.SPUtils
@@ -48,7 +47,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener,ILoginView {
                 username = et_name.text.toString().trim()
                 password = et_pwd.text.toString().trim()
                 if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
-                    ToastUtils.showShort(this, "账号或密码不能为空")
+                    ToastUtils.showShort(this, "账户或密码不能为空")
                 }else{
                     presenter.login(username, password)
                     showLoading()
@@ -66,7 +65,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener,ILoginView {
         SPUtils.getInstance().saveString(ConstantValues.TOKEN, loginEntity.access_token)
 
         //跳转首页
-        startActivity(Intent(this,ControllerActivity::class.java))
+        startActivity(Intent(this,HomeActivity::class.java))
         finish()
     }
 

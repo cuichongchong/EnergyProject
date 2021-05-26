@@ -6,10 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.TypedValue;
 import android.view.View;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.szny.energyproject.R;
 
 public class RecyclerViewDivider extends RecyclerView.ItemDecoration {

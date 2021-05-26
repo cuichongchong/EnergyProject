@@ -1,6 +1,5 @@
 package com.szny.energyproject.entity;
 
-
 /**
  * 数据页面展示实体
  * */

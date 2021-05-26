@@ -1,9 +1,12 @@
 package com.szny.energyproject.activity;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
@@ -14,20 +17,22 @@ import com.bigkoo.pickerview.listener.CustomListener;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.PieEntry;
+import com.gyf.barlibrary.ImmersionBar;
 import com.szny.energyproject.R;
 import com.szny.energyproject.adapter.DataAdapter;
 import com.szny.energyproject.base.BaseActivity;
+import com.szny.energyproject.entity.ControlEntity;
 import com.szny.energyproject.entity.DataEntity;
+import com.szny.energyproject.entity.RoomEntity;
 import com.szny.energyproject.mvp.exceptions.BaseException;
 import com.szny.energyproject.mvp.iviews.IDataView;
 import com.szny.energyproject.mvp.persenters.DataPresenter;
+import com.szny.energyproject.utils.DensityUtil;
 import com.szny.energyproject.utils.TimeUtils;
 import com.szny.energyproject.utils.ToastUtils;
 import com.szny.energyproject.widget.BarChartManager;
-import com.szny.energyproject.widget.PieChartManager;
+import com.szny.energyproject.widget.SearchableSpinner;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,25 +42,28 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 数据展示页面
+ * 能耗统计页面
  * */
 public class DataActivity extends BaseActivity implements View.OnClickListener, IDataView {
-
-    private PieChart mPieChart;
     private BarChart mBarChart;
-
     private RecyclerView rvData;
     private DataAdapter dataAdapter;
     private List<DataEntity> dataList;
 
     private RelativeLayout rlRoot;
     private TextView tvCurrentTime;
-    private ImageView ivTime;
+    private TextView tvTodayEle;
+    private TextView tvMonthEle;
+    private SearchableSpinner spinner;
     private TimePickerView timePickerView;
     private String mMonth = "";//选中月份
     private String mYear = "";//选中年份
 
-    private int roomId;
+    private int roomId;//房间id
+    private int userId;//用户id
+
+    //房间选择器
+    private List<String> mRoomList = new ArrayList<>();
 
     private DataPresenter presenter;
 
@@ -64,6 +72,8 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data);
 
+        ImmersionBar.with(this).init();
+
         initView();
         initData();
         initEvent();
@@ -71,23 +81,31 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
 
     private void initView() {
         Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.mipmap.ic_back);
+        toolbar.setNavigationIcon(R.mipmap.ic_back_white);
         toolbar.setNavigationOnClickListener(view -> finish());
         TextView toolbar_title = findViewById(R.id.toolbar_title);
-        toolbar_title.setText("数据展示");
+        toolbar_title.setText("能耗统计");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewGroup.LayoutParams tbLinearParams = toolbar.getLayoutParams(); //取控件textView当前的布局参数
+            toolbar.setPadding(0, DensityUtil.dip2px(this, 20f),0, 0);//4个参数按顺序分别是左上右下
+            tbLinearParams.height = DensityUtil.dip2px(this, 69f);// 控件的高
+            toolbar.setLayoutParams(tbLinearParams);//使设置好的布局参数应用到控件
+        }
 
         //堆叠条形图
         mBarChart = (BarChart) findViewById(R.id.mBarChart);
-        //饼图
-        mPieChart = findViewById(R.id.mPieChart);
         //数据展示列表
         rvData = findViewById(R.id.rv_data);
         //根布局
         rlRoot = findViewById(R.id.rl_root);
-        //选择日期
-        ivTime = findViewById(R.id.iv_choose_time);
         //当前日期
         tvCurrentTime = findViewById(R.id.tv_current_time);
+        //今日电量
+        tvTodayEle = findViewById(R.id.tv_todayEle);
+        //当月电量
+        tvMonthEle = findViewById(R.id.tv_monthEle);
+        //房间选择器
+        spinner = findViewById(R.id.search_spinner);
 
         //初始化日期选择器
         initTimePicker();
@@ -97,18 +115,19 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void initData() {
-        //接收roomId
-        roomId = getIntent().getIntExtra("roomId",0);
+        //接收userId
+        userId = getIntent().getIntExtra("userId", 0);
+
+        //获取房间列表
+        presenter.getRoomList(userId);
+
         //获取当前年份月份
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
         mYear = TimeUtils.getTime(curDate,"yyyy");
         mMonth = TimeUtils.getTime(curDate,"MM");
         tvCurrentTime.setText(TimeUtils.getTime(curDate,"yyyy年MM月"));
 
-        //获取数据
-        presenter.getReport(roomId,mYear,mMonth);
-
-        //模拟列表展示数据
+        //列表展示数据
         dataList= new ArrayList<>();
         dataAdapter = new DataAdapter(this,dataList);
         rvData.setLayoutManager(new LinearLayoutManager(mContext));
@@ -116,7 +135,61 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void initEvent() {
-        ivTime.setOnClickListener(this);
+        tvCurrentTime.setOnClickListener(this);
+    }
+
+    //房间列表信息返回
+    @Override
+    public void getRoomList(List<RoomEntity> data) {
+        if(data != null && data.size() > 0){
+            //获取到房间列表，默认请求第一个房间的数据
+            //roomId = data.get(0).getId();
+            roomId = data.get(data.size()-1).getId();
+            presenter.getReport(roomId,mYear,mMonth);
+
+            //获取到房间列表，默认请求第一个房间的电量
+            presenter.getInfo(userId,roomId);
+
+            //设置房间列表选择数据
+            mRoomList.clear();
+            for (int i = data.size() - 1; i >= 0; i--) {
+                mRoomList.add(data.get(i).getName());
+            }
+            /*for (RoomEntity item : data) {
+                mRoomList.add(item.getName());
+            }*/
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_spinner);
+            adapter.addAll(mRoomList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
+            spinner.setTitle("选择房间");
+            spinner.setPositiveButton("关闭");
+            spinner.setOnSearchableItemClickListener(new SearchableSpinner.SearchableItem() {
+                @Override
+                public void onSearchableItemClicked(Object item) {
+                    Log.e("doing","选择了 "+ item.toString());
+                    for (RoomEntity entity : data) {
+                        if(item.equals(entity.getName())){
+                            //获取当前选择的roomId
+                            roomId = entity.getId();
+                            //重新请求统计数据
+                            presenter.getReport(roomId,mYear,mMonth);
+                            //重新请求电量
+                            presenter.getInfo(userId,roomId);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    //获取今日、当月电量
+    @Override
+    public void getInfo(ControlEntity data) {
+        if(data != null){
+            tvTodayEle.setText(data.getTodayEle());
+            tvMonthEle.setText(data.getMonthEle());
+        }
     }
 
     //数据信息成功返回
@@ -124,7 +197,6 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
     public void success(List<DataEntity> dataEntities) {
         dataAdapter.clearAllData();
         if(dataEntities != null && dataEntities.size() > 0){
-
             //对数据按照日期进行排序
             Collections.sort(dataEntities, new Comparator<DataEntity>() {
                 @Override
@@ -149,56 +221,32 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
             //设置条形图
             showBarChart(dataEntities);
 
-            //设置饼状图
-            showPieChart(dataEntities);
-
             //设置列表数据
             dataList.addAll(dataEntities);
             dataAdapter.notifyDataSetChanged();
         }else{
             showBarChart(new ArrayList<>());
-            showPieChart(new ArrayList<>());
         }
     }
 
     //条形图
     public void showBarChart(List<DataEntity> dataEntities){
-        //设置条形图数据
-        ArrayList<BarEntry> yVals = new ArrayList<BarEntry>();
+        //封装日期
+        List<String> dataList = new ArrayList<>();
+        //设置坐标轴数据
+        List<BarEntry> vals = new ArrayList<BarEntry>();
         for(int i = 0; i < dataEntities.size(); i++){
+            //获取x轴数据
+            dataList.add(dataEntities.get(i).getDataTime().substring(8)+"日");
             DataEntity entity = dataEntities.get(i);
-            yVals.add(new BarEntry(i+1, new float[]{(float) entity.getLight(), (float) entity.getSocket(), (float) entity.getAir()}));
+            //添加x/y轴数据
+            vals.add(new BarEntry((float) i, new float[]{(float) entity.getLight(), (float) entity.getSocket(), (float) entity.getAir()}));
         }
+
         BarChartManager barChartManager = new BarChartManager(mBarChart);
         String label = "能耗数据";
         String[] stackLabels = new String[]{"照明","插座","空调"};
-        barChartManager.showBarChart(yVals,label,stackLabels);
-    }
-
-    //饼状图
-    public void showPieChart(List<DataEntity> dataEntities){
-        double sumLight = 0;
-        double sumAir = 0;
-        double sumSocket = 0;
-        for(DataEntity item : dataEntities){
-            sumLight = sumLight + item.getLight();
-            sumAir = sumAir + item.getAir();
-            sumSocket = sumSocket + item.getSocket();
-        }
-
-        //设置饼图数据
-        List<PieEntry> yvals = new ArrayList<>();
-        yvals.add(new PieEntry((float) sumLight,"照明"));
-        yvals.add(new PieEntry((float) sumSocket,"插座"));
-        yvals.add(new PieEntry((float) sumAir,"空调"));
-        //设置每份的颜色
-        List<Integer> colors = new ArrayList<>();
-        colors.add(getResources().getColor(R.color.color1));
-        colors.add(getResources().getColor(R.color.color2));
-        colors.add(getResources().getColor(R.color.color3));
-        //展示饼图
-        PieChartManager pieChartManager = new PieChartManager(mPieChart);
-        pieChartManager.showRingPieChart(yvals,colors,"能源消耗");
+        barChartManager.showBarChart(vals,label,stackLabels,dataList);
     }
 
     @Override
@@ -214,7 +262,7 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.iv_choose_time:
+            case R.id.tv_current_time:
                 timePickerView.show();
                 break;
         }
@@ -225,17 +273,20 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
         //控制时间范围(如果不设置范围，则使用默认时间1900-2100年，此段代码可注释)
         //因为系统Calendar的月份是从0-11的,所以如果是调用Calendar的set方法来设置时间,月份的范围也要是从0-11
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-        SimpleDateFormat formatterYear = new SimpleDateFormat("yyyy ");
+        SimpleDateFormat formatterYear = new SimpleDateFormat("yyyy");
         String yearStr = formatterYear.format(curDate);
-        int yearInt = (int) Double.parseDouble(yearStr);
+        int yearInt = Integer.parseInt(yearStr);
+        //int yearInt = (int) Double.parseDouble(yearStr);
 
-        SimpleDateFormat formatterMouth = new SimpleDateFormat("MM ");
+        SimpleDateFormat formatterMouth = new SimpleDateFormat("MM");
         String mouthStr = formatterMouth.format(curDate);
-        int mouthInt = (int) Double.parseDouble(mouthStr);
+        int mouthInt = Integer.parseInt(mouthStr);
+        //int mouthInt = (int) Double.parseDouble(mouthStr);
 
-        SimpleDateFormat formatterDay = new SimpleDateFormat("dd ");
+        SimpleDateFormat formatterDay = new SimpleDateFormat("dd");
         String dayStr = formatterDay.format(curDate);
-        int dayInt = (int) Double.parseDouble(dayStr);
+        int dayInt = Integer.parseInt(dayStr);
+        //int dayInt = (int) Double.parseDouble(dayStr);
 
         Calendar selectedDate = Calendar.getInstance();//系统当前时间
         Calendar startDate = Calendar.getInstance();
@@ -247,7 +298,7 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
             tvCurrentTime.setText(TimeUtils.getTime(date, "yyyy年MM月"));
             mMonth = TimeUtils.getTime(date, "MM");
             mYear = TimeUtils.getTime(date,"yyyy");
-            //重新请求数据
+            //重新请求统计数据
             presenter.getReport(roomId,mYear,mMonth);
         })
                 .setType(new boolean[]{true, true, false, false, false, false}) //年月日时分秒 的显示与否，不设置则默认全部显示
