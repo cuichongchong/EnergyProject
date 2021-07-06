@@ -16,8 +16,8 @@ public class ControlPresenter extends BasePresenter<IControlView> {
     private ControlModel controlModel = new ControlModel();
 
     //获取房间列表
-    public void getRoomList(int id) {
-        Disposable disposable = controlModel.getRoomList(id)
+    public void getMember(int userId,int groupId) {
+        Disposable disposable = controlModel.getMember(userId,groupId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(baseEntity -> {

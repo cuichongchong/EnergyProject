@@ -10,17 +10,15 @@ import com.szny.energyproject.utils.StringUtils;
 import java.util.List;
 
 /**
- * 数据列表展示适配器
+ * 重点用能列表展示适配器
  * */
-public class DataAdapter extends BaseRecyclerViewAdapter<RecordEntity> {
+public class EnergyAdapter extends BaseRecyclerViewAdapter<RecordEntity> {
     private Context context;
-    private String classType;
     private int timeType;
 
-    public DataAdapter(Context context,List<RecordEntity> data,String classType,int timeType) {
-        super(data, R.layout.item_data);
+    public EnergyAdapter(Context context, List<RecordEntity> data,int timeType) {
+        super(data, R.layout.item_energy);
         this.context = context;
-        this.classType = classType;
         this.timeType = timeType;
     }
 
@@ -30,7 +28,6 @@ public class DataAdapter extends BaseRecyclerViewAdapter<RecordEntity> {
         TextView tvData1 = holder.getView(R.id.tv_data1);
         TextView tvData2 = holder.getView(R.id.tv_data2);
         TextView tvData3 = holder.getView(R.id.tv_data3);
-        //TextView tvSum = holder.getView(R.id.tv_sum);
 
         //按日查询时显示时间点
         if(timeType == 3){
@@ -39,15 +36,8 @@ public class DataAdapter extends BaseRecyclerViewAdapter<RecordEntity> {
             tvDate.setText(item.getData_time());
         }
 
-        if("房间".equals(classType) || "单位".equals(classType)){
-            tvData1.setText(StringUtils.doulbeToStr(item.getLight()));
-            tvData2.setText(StringUtils.doulbeToStr(item.getSocket()));
-            tvData3.setText(StringUtils.doulbeToStr(item.getAir()));
-        }else{
-            tvData1.setText(StringUtils.doulbeToStr(item.getElec()));
-            tvData2.setText(StringUtils.doulbeToStr(item.getWater()));
-            tvData3.setText(StringUtils.doulbeToStr(item.getHeat()));
-        }
-        //tvSum.setText(String.valueOf(item.getLight()+item.getSocket()+item.getAir()));
+        tvData1.setText(StringUtils.doulbeToStr(item.getElec()));
+        tvData2.setText(StringUtils.doulbeToStr(item.getWater()));
+        tvData3.setText(StringUtils.doulbeToStr(item.getHeat()));
     }
 }

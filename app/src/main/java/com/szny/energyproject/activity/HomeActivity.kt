@@ -1,6 +1,7 @@
 package com.szny.energyproject.activity
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
@@ -21,7 +22,6 @@ import com.szny.energyproject.utils.SPUtils
 import com.szny.energyproject.utils.ToastUtils
 import com.szny.energyproject.widget.CommonDialog
 import kotlinx.android.synthetic.main.activity_home.*
-import kotlin.collections.ArrayList
 
 /**
  * 首页
@@ -48,7 +48,7 @@ class HomeActivity : BaseActivity(),IHomeView, View.OnClickListener {
     }
 
     private fun initView() {
-        toolbar_title.text = "统计控制"
+        toolbar_title.text = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val tbLinearParams = toolbar.layoutParams //取控件textView当前的布局参数
             toolbar.setPadding(0, DensityUtil.dip2px(this, 20f),                                                                 0, 0)//4个参数按顺序分别是左上右下
@@ -78,21 +78,20 @@ class HomeActivity : BaseActivity(),IHomeView, View.OnClickListener {
     }
 
     private fun initEvent() {
-        tv_name.setOnClickListener(this)
-        iv_about.setOnClickListener(this)
+        iv_quit.setOnClickListener(this)
         tv_control.setOnClickListener(this)
         tv_statis.setOnClickListener(this)
         tv_analys.setOnClickListener(this)
         tv_co2.setOnClickListener(this)
+        tv_energy.setOnClickListener(this)
+        tv_bill.setOnClickListener(this)
+        tv_phone.setOnClickListener(this)
     }
 
     override fun onClick(view: View) {
         when(view.id){
-            R.id.tv_name ->{
+            R.id.iv_quit ->{
                 logOut()
-            }
-            R.id.iv_about ->{
-                toAbout()
             }
             R.id.tv_control ->{
                 if(this.userId != -1){
@@ -110,6 +109,17 @@ class HomeActivity : BaseActivity(),IHomeView, View.OnClickListener {
             }
             R.id.tv_co2 ->{
                 startActivity(Intent(this,CarbonEmissionActivity::class.java))
+            }
+            R.id.tv_energy ->{
+                startActivity(Intent(this,EnergyActivity::class.java)
+                    .putExtra("userId",this.userId))
+            }
+            R.id.tv_bill ->{
+                startActivity(Intent(this,EnergyBillActivity::class.java)
+                    .putExtra("userId",this.userId))
+            }
+            R.id.tv_phone ->{
+                callPhone(tv_phone.text.toString())
             }
         }
     }
@@ -174,6 +184,13 @@ class HomeActivity : BaseActivity(),IHomeView, View.OnClickListener {
                 }
             })
             .show()
+    }
+
+    private fun callPhone(phoneNum: String) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        val data: Uri = Uri.parse("tel:$phoneNum")
+        intent.data = data
+        startActivity(intent)
     }
 
     override fun failed(e: Throwable) {

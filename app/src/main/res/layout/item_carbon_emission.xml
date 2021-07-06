@@ -1,78 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:background="@drawable/white_shape">
-
-    <TextView
-        android:id="@+id/tv_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        android:text="能源 北522办公室"
-        android:textColor="@color/color_333333"
-        android:textSize="18sp"/>
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_below="@+id/tv_name"
-        android:orientation="horizontal"
-        android:background="@drawable/white_shape">
-        <RelativeLayout
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:layout_weight="1">
-            <TextView
-                android:id="@+id/tv1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="用电量(kWh)"
-                android:textSize="17sp"
-                android:textColor="@color/color_333333"/>
-            <TextView
-                android:id="@+id/tv_ele"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv1"
-                android:layout_marginTop="15dp"
-                android:layout_centerHorizontal="true"
-                android:text=""
-                android:textSize="17sp"
-                android:textColor="@color/color_333333"/>
-        </RelativeLayout>
-        <View
-            android:layout_width="0.5dp"
-            android:layout_height="match_parent"
-            android:background="@color/divider_color"/>
-        <RelativeLayout
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:gravity="center"
+            android:textColor="@color/color_111111"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/tv_ele"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:layout_weight="1">
-            <TextView
-                android:id="@+id/tv2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="CO₂排放量(kg)"
-                android:textSize="17sp"
-                android:textColor="@color/color_333333"/>
-            <TextView
-                android:id="@+id/tv_ele_co2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv2"
-                android:layout_marginTop="15dp"
-                android:layout_centerHorizontal="true"
-                android:text=""
-                android:textSize="17sp"
-                android:textColor="@color/color_333333"/>
-        </RelativeLayout>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@color/color_111111"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/tv_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@color/color_111111"
+            android:textSize="14sp"/>
     </LinearLayout>
-</RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/divider_color"/>
+</LinearLayout>

@@ -9,6 +9,7 @@ import com.szny.energyproject.entity.ControlEntity;
 import com.szny.energyproject.entity.DataEntity;
 import com.szny.energyproject.entity.LogoutEntity;
 import com.szny.energyproject.entity.LoginEntity;
+import com.szny.energyproject.entity.RecordEntity;
 import com.szny.energyproject.entity.RoomEntity;
 import com.szny.energyproject.entity.UserEntity;
 import com.szny.energyproject.utils.SPUtils;
@@ -30,7 +31,6 @@ import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -117,9 +117,9 @@ public class RetrofitManager {
         @GET("api/systematic/user/info")
         Observable<BaseEntity<UserEntity>> userInfo();
 
-        //获取房间列表
-        @GET("api/client/desktop/getRoom/{id}")
-        Observable<BaseEntity<List<RoomEntity>>> getRoomList(@Path("id")int id);
+        //获取成员列表
+        @POST("api/client/desktop/getMember")
+        Observable<BaseEntity<List<RoomEntity>>> getMember(@Body RequestBody requestBody);
 
         //获取首页信息
         @POST("api/client/desktop/getInfo")
@@ -132,6 +132,13 @@ public class RetrofitManager {
         //获取房间碳排放量
         @POST("api/display/data/carbon")
         Observable<BaseEntity<List<CarbonEntity>>> getCarbon(@Body RequestBody requestBody);
-    }
 
+        //获取分类分组列表
+        @POST("api/client/desktop/getGroup")
+        Observable<BaseEntity<List<RoomEntity>>> getGroup();
+
+        //获取能耗统计数据
+        @POST("api/display/data/record")
+        Observable<BaseEntity<List<RecordEntity>>> getRecord(@Body RequestBody requestBody);
+    }
 }

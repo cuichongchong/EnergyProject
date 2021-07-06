@@ -86,11 +86,18 @@ public class BarChartManager {
         BarData data = new BarData(dataSets);
         data.setValueTextColor(Color.WHITE);
 
+        //设置显示的x轴显示的数量
+        xAxis.setLabelCount((vals.size()+1)/3,false);
         //格式化x轴显示的值
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getAxisLabel(float value, AxisBase axis) {
-                return dataList.get((int)value);
+                int val = (int)value;
+                String str = "";
+                if(val < dataList.size()){
+                    str = dataList.get((int)value);
+                }
+                return str;
             }
         });
 
@@ -104,7 +111,7 @@ public class BarChartManager {
         int stacksize = 3;
         //有尽可能多的颜色每项堆栈值
         int[] colors = new int[stacksize];
-        int[] MATERIAL_COLORS = {rgb("#42aafc"),rgb("#32d3eb"),rgb("#5bc49f")};
+        int[] MATERIAL_COLORS = {rgb("#4992ff"),rgb("#7cffb2"),rgb("#fddd60")};
         System.arraycopy(MATERIAL_COLORS, 0, colors, 0, colors.length);
         return colors;
     }

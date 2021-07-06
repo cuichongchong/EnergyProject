@@ -42,54 +42,90 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/white_shape">
                 <TextView
-                    android:id="@+id/tv_room"
+                    android:id="@+id/tv_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_marginStart="8dp"
-                    android:text="房间"
+                    android:text="类型"
                     android:textSize="16sp"
                     android:textColor="@color/color_111111"/>
                 <com.szny.energyproject.widget.SearchableSpinner
-                    android:id="@+id/search_spinner"
+                    android:id="@+id/type_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    style="@style/spinner_style"
-                    android:layout_toEndOf="@+id/tv_room"
+                    style="@style/spinner_style1"
+                    android:layout_toEndOf="@+id/tv_type"
                     android:layout_marginStart="5dp"/>
+                <com.szny.energyproject.widget.SearchableSpinner
+                    android:id="@+id/search_spinner"
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    style="@style/spinner_style"
+                    android:layout_below="@+id/type_spinner"
+                    android:layout_marginStart="45dp"/>
                 <TextView
-                    android:id="@+id/tv_time"
+                    android:id="@+id/tv_time1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/search_spinner"
                     android:layout_marginTop="21dp"
                     android:layout_marginStart="8dp"
-                    android:text="日期"
+                    android:text="时间"
                     android:textSize="16sp"
                     android:textColor="@color/color_111111"/>
+                <Spinner
+                    android:id="@+id/time_spinner"
+                    android:layout_width="53dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_toEndOf="@+id/tv_time1"
+                    android:layout_below="@+id/search_spinner"
+                    style="@style/spinner_style2"
+                    android:spinnerMode="dropdown"
+                    android:overlapAnchor="false"/>
                 <TextView
                     android:id="@+id/tv_current_time"
-                    android:layout_width="wrap_content"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@+id/tv_time"
+                    android:layout_toEndOf="@+id/time_spinner"
                     android:layout_below="@+id/search_spinner"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginBottom="10dp"
                     android:gravity="center_vertical"
                     android:paddingStart="10dp"
-                    android:background="@mipmap/spinner_style"
+                    android:background="@mipmap/spinner_style1"
                     android:text=""
                     android:textSize="16sp"
                     android:textColor="@color/color_111111"/>
+                <TextView
+                    android:id="@+id/tv_range_time"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/time_spinner"
+                    android:layout_below="@+id/search_spinner"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:background="@mipmap/spinner_style1"
+                    android:text=""
+                    android:textSize="16sp"
+                    android:textColor="@color/color_111111"
+                    android:visibility="gone"/>
             </RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="用能占比"
+                android:text="能耗占比"
                 android:textColor="@color/color_111111"
                 android:textSize="16sp"
                 app:drawableLeftCompat="@mipmap/ic_piechart" />
@@ -106,71 +142,89 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:drawablePadding="5dp"
-                android:text="用能数据"
+                android:text="能效分析"
                 android:textColor="@color/color_111111"
                 android:textSize="16sp"
                 app:drawableLeftCompat="@mipmap/ic_data" />
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="15dp"
+                android:padding="15dp"
                 android:background="@drawable/white_shape">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="5dp">
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text="时间"
-                        android:textSize="13sp"
-                        android:textColor="#333333"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="照明"
-                        android:textSize="13sp"
-                        android:textColor="#333333"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="插座"
-                        android:textSize="13sp"
-                        android:textColor="#333333"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="空调"
-                        android:textSize="13sp"
-                        android:textColor="#333333"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="总量"
-                        android:textSize="13sp"
-                        android:textColor="#333333"/>
-                </LinearLayout>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_data"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tv_data3"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
-                    tools:listitem="@layout/item_data"/>
-            </LinearLayout>
+                    android:text="效能指数"
+                    android:textColor="@color/color_111111"
+                    android:textSize="16sp"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/tv_data3_val"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginBottom="10dp"
+                    android:text=""
+                    android:textColor="@color/color_111111"
+                    android:textSize="16sp"
+                    android:visibility="gone"/>
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/tv_data3"
+                    android:background="@color/divider_color"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/tv_data1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_data3"
+                    android:layout_marginTop="5dp"
+                    android:text="工作日能耗"
+                    android:textColor="@color/color_111111"
+                    android:textSize="16sp"/>
+                <TextView
+                    android:id="@+id/tv_data1_val"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_below="@+id/tv_data3"
+                    android:layout_marginTop="5dp"
+                    android:text=""
+                    android:textColor="@color/color_111111"
+                    android:textSize="16sp"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/tv_data1"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/divider_color"/>
+                <TextView
+                    android:id="@+id/tv_data2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_data1"
+                    android:layout_marginTop="10dp"
+                    android:text="休息日能耗"
+                    android:textColor="@color/color_111111"
+                    android:textSize="16sp"/>
+                <TextView
+                    android:id="@+id/tv_data2_val"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@+id/tv_data1"
+                    android:text=""
+                    android:textColor="@color/color_111111"
+                    android:textSize="16sp"/>
+            </RelativeLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </RelativeLayout>

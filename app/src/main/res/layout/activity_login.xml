@@ -8,12 +8,23 @@
     android:background="@mipmap/ic_login_bg">
 
     <TextView
-        android:id="@+id/tv_title"
+        android:id="@+id/tv_title1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="70dp"
-        android:text="5G+示范项目"
+        android:text="5G+公共机构智慧"
+        android:textSize="24sp"
+        android:textColor="@color/color_333333"/>
+
+    <TextView
+        android:id="@+id/tv_title2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tv_title1"
+        android:layout_marginTop="0dp"
+        android:text="能源监测示范项目"
         android:textSize="24sp"
         android:textColor="@color/color_333333"/>
 
@@ -21,7 +32,7 @@
         android:id="@+id/ll_input_area"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_title"
+        android:layout_below="@+id/tv_title2"
         android:layout_marginTop="25dp"
         android:layout_marginStart="11dp"
         android:layout_marginEnd="11dp"

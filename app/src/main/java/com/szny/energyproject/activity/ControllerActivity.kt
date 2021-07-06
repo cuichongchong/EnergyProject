@@ -121,7 +121,7 @@ class ControllerActivity : BaseActivity(), View.OnClickListener, OnRefreshListen
         userId = intent.getIntExtra("userId", 0)
 
         //获取房间列表
-        presenter.getRoomList(userId)
+        presenter.getMember(userId,24)
 
         //空调列表
         airList = arrayListOf()

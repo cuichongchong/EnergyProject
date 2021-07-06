@@ -16,8 +16,12 @@ import okhttp3.RequestBody;
 public class ControlModel {
 
     //获取房间列表
-    public Observable<BaseEntity<List<RoomEntity>>> getRoomList(int id) {
-        return RetrofitManager.getInstance().getInternetService().getRoomList(id);
+    public Observable<BaseEntity<List<RoomEntity>>> getMember(int userId,int groupId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("groupId", groupId);
+        RequestBody body = RetrofitManager.getInstance().createBodyByMap(params);
+        return RetrofitManager.getInstance().getInternetService().getMember(body);
     }
 
     //获取首页信息

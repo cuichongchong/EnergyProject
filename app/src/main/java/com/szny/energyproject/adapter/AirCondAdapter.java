@@ -78,9 +78,11 @@ public class AirCondAdapter extends BaseRecyclerViewAdapter<ControlEntity.Device
             setSwitch.setChecked(true);
         }
 
-        tvIndoorTemp.setText(item.getTemp().toString());
+        //tvIndoorTemp.setText(item.getTemp().toString());
+        tvIndoorTemp.setText((String.valueOf((int) Math.floor(item.getTemp()))));
 
-        tvSetTemp.setText(item.getSetTemp().toString());
+        //tvSetTemp.setText(item.getSetTemp().toString());
+        tvSetTemp.setText((String.valueOf((int) Math.floor(item.getSetTemp()))));
 
         if(item.getRunMode() == 1){
             tvModel.setText("制冷");

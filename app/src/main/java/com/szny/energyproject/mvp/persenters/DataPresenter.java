@@ -12,18 +12,18 @@ import io.reactivex.schedulers.Schedulers;
 public class DataPresenter extends BasePresenter<IDataView> {
     private DataModel dataModel = new DataModel();
 
-    //获取房间列表
-    public void getRoomList(int id) {
-        Disposable disposable = dataModel.getRoomList(id)
+    //获取权限下成员列表
+    public void getMember(int userId,int groupId) {
+        Disposable disposable = dataModel.getMember(userId, groupId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(baseEntity -> {
                     if(baseView != null){
                         if(200 == baseEntity.getCode()){
-                            LogUtils.e("doing","获取房间列表成功 "+baseEntity.getMsg());
-                            baseView.getRoomList(baseEntity.getData());
+                            LogUtils.e("doing","获取成员列表成功 "+baseEntity.getMsg());
+                            baseView.getMember(baseEntity.getData());
                         }else{
-                            LogUtils.e("doing","获取房间列表失败 "+baseEntity.getCode()+"  "+baseEntity.getMsg());
+                            LogUtils.e("doing","获取成员列表失败 "+baseEntity.getCode()+"  "+baseEntity.getMsg());
                             baseView.failed(new BaseException(baseEntity.getMsg(),baseEntity.getCode()));
                         }
                     }
@@ -35,7 +35,7 @@ public class DataPresenter extends BasePresenter<IDataView> {
         disposables.add(disposable);
     }
 
-    //获取数据信息
+    /*//获取数据信息，之前接口
     public void getReport(int roomId,String year,String month) {
         Disposable disposable = dataModel.getReport(roomId,year,month)
                 .subscribeOn(Schedulers.io())
@@ -56,20 +56,66 @@ public class DataPresenter extends BasePresenter<IDataView> {
                     }
                 });
         disposables.add(disposable);
-    }
+    }*/
 
-    //获取首页信息
-    public void getInfo(int userId, int roomId) {
-        Disposable disposable = dataModel.getInfo(userId,roomId)
+    //获取权限分组列表
+    public void getGroup() {
+        Disposable disposable = dataModel.getGroup()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(baseEntity -> {
                     if(baseView != null){
                         if(200 == baseEntity.getCode()){
-                            LogUtils.e("doing","获取首页信息成功 "+baseEntity.getMsg());
-                            baseView.getInfo(baseEntity.getData());
+                            LogUtils.e("doing","获取权限分组成功 "+baseEntity.getMsg());
+                            baseView.getGroup(baseEntity.getData());
                         }else{
-                            LogUtils.e("doing","获取首页信息失败 "+baseEntity.getCode()+"  "+baseEntity.getMsg());
+                            LogUtils.e("doing","获取权限分组失败 "+baseEntity.getCode()+"  "+baseEntity.getMsg());
+                            baseView.failed(new BaseException(baseEntity.getMsg(),baseEntity.getCode()));
+                        }
+                    }
+                }, throwable -> {
+                    if (baseView != null) {
+                        baseView.failed(throwable);
+                    }
+                });
+        disposables.add(disposable);
+    }
+
+    //获取能耗分析数据
+    public void getRecord(int memberId,int type,String time) {
+        Disposable disposable = dataModel.getRecord(memberId,type,time)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(baseEntity -> {
+                    if(baseView != null){
+                        if(200 == baseEntity.getCode()){
+                            LogUtils.e("doing","获取能耗分析数据成功 "+baseEntity.getMsg());
+                            baseView.getRecord(baseEntity.getData());
+                        }else{
+                            LogUtils.e("doing","获取能耗分析数据失败 "+baseEntity.getCode()+"  "+baseEntity.getMsg());
+                            baseView.failed(new BaseException(baseEntity.getMsg(),baseEntity.getCode()));
+                        }
+                    }
+                }, throwable -> {
+                    if (baseView != null) {
+                        baseView.failed(throwable);
+                    }
+                });
+        disposables.add(disposable);
+    }
+
+    //获取碳排量数据
+    public void getCarbon(int groupId,int type,String time) {
+        Disposable disposable = dataModel.getCarbon(groupId,type,time)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(baseEntity -> {
+                    if(baseView != null){
+                        if(200 == baseEntity.getCode()){
+                            LogUtils.e("doing","获取碳排量成功 "+baseEntity.getMsg());
+                            baseView.success(baseEntity.getData());
+                        }else{
+                            LogUtils.e("doing","获取碳排放量失败 "+baseEntity.getCode()+"  "+baseEntity.getMsg());
                             baseView.failed(new BaseException(baseEntity.getMsg(),baseEntity.getCode()));
                         }
                     }

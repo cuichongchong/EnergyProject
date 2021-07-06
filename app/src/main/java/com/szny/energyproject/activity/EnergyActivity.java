@@ -21,12 +21,10 @@ import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
 import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.PieEntry;
 import com.gyf.barlibrary.ImmersionBar;
 import com.szny.energyproject.R;
-import com.szny.energyproject.adapter.DataAdapter;
+import com.szny.energyproject.adapter.EnergyAdapter;
 import com.szny.energyproject.base.BaseActivity;
 import com.szny.energyproject.entity.CarbonEntity;
 import com.szny.energyproject.entity.RecordEntity;
@@ -40,7 +38,6 @@ import com.szny.energyproject.utils.StringUtils;
 import com.szny.energyproject.utils.TimeUtils;
 import com.szny.energyproject.utils.ToastUtils;
 import com.szny.energyproject.widget.BarChartManager;
-import com.szny.energyproject.widget.PieChartManager;
 import com.szny.energyproject.widget.SearchableSpinner;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,63 +46,42 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 能耗统计页面
+ * 重点用能页面
  * */
-public class DataActivity extends BaseActivity implements View.OnClickListener, IDataView,DatePickerDialog.OnDateSetListener {
-    private BarChart mBarChart;
-    private PieChart mPieChart;
-    private RecyclerView rvData;
-    private DataAdapter dataAdapter;
-    private List<RecordEntity> dataList;
-
+public class EnergyActivity extends BaseActivity implements View.OnClickListener, IDataView, DatePickerDialog.OnDateSetListener {
     private RelativeLayout rlRoot;
     private TextView tvCurrentTime;
     private TextView tvRangeTime;
     private SearchableSpinner spinner;
-    private SearchableSpinner typeSpinner;
-    private TimePickerView timePickerView;
     private Spinner timeSpinner;
+    private TimePickerView timePickerView;
+    private RecyclerView rvEnergy;
+    private BarChart mBarChart;
 
-    //列表表头文字显示
-    private TextView tvData1;
-    private TextView tvData2;
-    private TextView tvData3;
+    private EnergyAdapter adapter;
+    private List<RecordEntity> dataList;
 
     //能耗总计字段
-    private TextView tvSumName;
-    private TextView tvSum1;
     private TextView tvSum1Val;
-    private TextView tvSum2;
     private TextView tvSum2Val;
-    private TextView tvSum3;
     private TextView tvSum3Val;
 
-    //柱状图/饼状图
-    private TextView tvBar;
-    private TextView tvPie;
-
-    private int groupId;//类别id
     private int userId;//用户id
     private int memberId;//成员id
     private int timeType = 1;//选择的时间类型(1年2月3日4时间段)
-    private String classType;//选择的分类类别
     private String selectTime;//存储选择的时间
 
     //日期选择数据集合
     public ArrayAdapter<String> adapterTime;
-    //类别列表选择器
-    private List<String> groupList = new ArrayList<>();
     //类别下成员选择器
     private List<String> memberList = new ArrayList<>();
-    //数据统计返回的数据
-    private List<RecordEntity> data;
 
     private DataPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_data);
+        setContentView(R.layout.activity_energy);
 
         ImmersionBar.with(this).init();
 
@@ -119,7 +95,7 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
         toolbar.setNavigationIcon(R.mipmap.ic_back_white);
         toolbar.setNavigationOnClickListener(view -> finish());
         TextView toolbar_title = findViewById(R.id.toolbar_title);
-        toolbar_title.setText("能耗统计");
+        toolbar_title.setText("重点用能");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ViewGroup.LayoutParams tbLinearParams = toolbar.getLayoutParams(); //取控件textView当前的布局参数
             toolbar.setPadding(0, DensityUtil.dip2px(this, 20f),0, 0);//4个参数按顺序分别是左上右下
@@ -127,42 +103,24 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
             toolbar.setLayoutParams(tbLinearParams);//使设置好的布局参数应用到控件
         }
 
-        //堆叠条形图
-        mBarChart = findViewById(R.id.mBarChart);
-        //饼状图
-        mPieChart = findViewById(R.id.mPieChart);
-        //数据展示列表
-        rvData = findViewById(R.id.rv_data);
         //根布局
         rlRoot = findViewById(R.id.rl_root);
         //当前日期
         tvCurrentTime = findViewById(R.id.tv_current_time);
         //时间段
         tvRangeTime = findViewById(R.id.tv_range_time);
-        //类别选择器
-        typeSpinner = findViewById(R.id.type_spinner);
         //成员选择器
         spinner = findViewById(R.id.search_spinner);
         //时间类型选择器
         timeSpinner = findViewById(R.id.time_spinner);
-        //照明 电
-        tvData1 = findViewById(R.id.tv_data1);
-        //插座 水
-        tvData2 = findViewById(R.id.tv_data2);
-        //空调 热
-        tvData3 = findViewById(R.id.tv_data3);
+        //能耗列表
+        rvEnergy = findViewById(R.id.rv_energy);
         //能耗统计控件
-        tvSumName = findViewById(R.id.tv_sum_name);
-        tvSum1 = findViewById(R.id.tv_sum1);
         tvSum1Val = findViewById(R.id.tv_sum1_val);
-        tvSum2 = findViewById(R.id.tv_sum2);
         tvSum2Val = findViewById(R.id.tv_sum2_val);
-        tvSum3 = findViewById(R.id.tv_sum3);
         tvSum3Val = findViewById(R.id.tv_sum3_val);
-        //柱状、饼状选择
-        tvBar = findViewById(R.id.tv_bar);
-        tvBar.setTextColor(getResources().getColor(R.color.colorAccent));
-        tvPie = findViewById(R.id.tv_pie);
+        //堆叠条形图
+        mBarChart = findViewById(R.id.mBarChart);
 
         presenter = new DataPresenter();
         presenter.attachView(this);
@@ -172,8 +130,8 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
         //接收userId
         userId = getIntent().getIntExtra("userId", 0);
 
-        //获取类别分组列表
-        presenter.getGroup();
+        //获取重点用能下成员列表
+        presenter.getMember(userId,33);
 
         //获取当前年份月份
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
@@ -198,8 +156,6 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
                 if("年".equals(type)){
                     timeType = 1;
                     tvCurrentTime.setText(TimeUtils.getTime(curDate,"yyyy"));
-                    //设置能耗统计标题
-                    tvSumName.setText(TimeUtils.getTime(curDate,"yyyy年")+"能耗统计");
                     //切换了查询时间类别，默认查当前的
                     if(memberId != 0){
                         presenter.getRecord(memberId,timeType,tvCurrentTime.getText().toString());
@@ -207,24 +163,16 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
                 }else if("月".equals(type)){
                     timeType = 2;
                     tvCurrentTime.setText(TimeUtils.getTime(curDate,"yyyy-MM"));
-                    //设置能耗统计标题
-                    tvSumName.setText(TimeUtils.getTime(curDate,"yyyy-MM月")+"能耗统计");
                     //切换了查询时间类别，默认查当前的
                     presenter.getRecord(memberId,timeType,tvCurrentTime.getText().toString());
                 }else if("日".equals(type)){
                     timeType = 3;
                     tvCurrentTime.setText(TimeUtils.getTime(curDate,"yyyy-MM-dd"));
-                    //设置能耗统计标题
-                    tvSumName.setText(TimeUtils.getTime(curDate,"yyyy-MM-dd日")+"能耗统计");
                     //切换了查询时间类别，默认查当前的
                     presenter.getRecord(memberId,timeType,tvCurrentTime.getText().toString());
                 }else if("区间".equals(type)){
                     timeType = 4;
                     tvCurrentTime.setText("");
-                    //设置能耗统计标题
-                    tvSumName.setText("能耗统计");
-                    dataAdapter.clearAllData();
-                    dataAdapter.notifyDataSetChanged();
                 }
                 selectTime = tvCurrentTime.getText().toString();
             }
@@ -238,146 +186,38 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
     private void initEvent() {
         tvCurrentTime.setOnClickListener(this);
         tvRangeTime.setOnClickListener(this);
-        tvPie.setOnClickListener(this);
-        tvBar.setOnClickListener(this);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.tv_current_time:
-                if(timeType == 1){
-                    initTimePicker(true,false,false);
+                if (timeType == 1) {
+                    initTimePicker(true, false, false);
                     timePickerView.show();
-                }else if(timeType == 2){
-                    initTimePicker(true,true,false);
+                } else if (timeType == 2) {
+                    initTimePicker(true, true, false);
                     timePickerView.show();
-                }else if(timeType == 3){
-                    initTimePicker(true,true,true);
+                } else if (timeType == 3) {
+                    initTimePicker(true, true, true);
                     timePickerView.show();
-                }else if(timeType == 4){
+                } else if (timeType == 4) {
                     showDatePickerDialog();
                 }
                 break;
             case R.id.tv_range_time:
                 showDatePickerDialog();
                 break;
-            case R.id.tv_pie:
-                mPieChart.setVisibility(View.VISIBLE);
-                mBarChart.setVisibility(View.GONE);
-                tvPie.setTextColor(getResources().getColor(R.color.colorAccent));
-                tvBar.setTextColor(getResources().getColor(R.color.color_111111));
-                showPieChart(this.data);
-                break;
-            case R.id.tv_bar:
-                mPieChart.setVisibility(View.GONE);
-                mBarChart.setVisibility(View.VISIBLE);
-                tvPie.setTextColor(getResources().getColor(R.color.color_111111));
-                tvBar.setTextColor(getResources().getColor(R.color.colorAccent));
-                showBarChart(this.data);
-                break;
         }
     }
 
-    //获取类别分组列表
-    @Override
-    public void getGroup(List<RoomEntity> data) {
-        if(data != null && data.size() > 0){
-            //获取到类别列表后，默认请求第一个类别下的成员列表
-            groupId = data.get(0).getId();
-            presenter.getMember(userId,groupId);
-
-            //获取第一个类别
-            classType = data.get(0).getName();
-            //查看默认的第一个类别，显示列表标题
-            if("房间".equals(classType) || "单位".equals(classType)){
-                //设置列表标题显示
-                tvData1.setText("照明");
-                tvData2.setText("插座");
-                tvData3.setText("空调");
-                //设置能耗总计显示
-                tvSum1.setText("照明总用电");
-                tvSum2.setText("插座总用电");
-                tvSum3.setText("空调总用电");
-            }else{
-                //设置列表标题显示
-                tvData1.setText("电");
-                tvData2.setText("水");
-                tvData3.setText("热");
-                //设置能耗总计显示
-                tvSum1.setText("总用电");
-                tvSum2.setText("总用水");
-                tvSum3.setText("总用热");
-            }
-            //设置能耗统计标题
-            tvSumName.setText(selectTime+"年能耗统计");
-
-            //设置类别选择数据
-            groupList.clear();
-            for (RoomEntity datum : data) {
-                groupList.add(datum.getName());
-            }
-
-            //类型选择器
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.item_spinner);
-            adapter.addAll(groupList);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            typeSpinner.setAdapter(adapter);
-            typeSpinner.setTitle("选择类型");
-            typeSpinner.setPositiveButton("关闭");
-            typeSpinner.setOnSearchableItemClickListener(new SearchableSpinner.SearchableItem() {
-                @Override
-                public void onSearchableItemClicked(Object item) {
-                    Log.e("doing","选择了 "+ item.toString());
-                    classType = item.toString();
-                    for (RoomEntity entity : data) {
-                        if(classType.equals(entity.getName())){
-                            //获取当前选择的groupId
-                            groupId = entity.getId();
-                            //重新请求所选类别的成员列表
-                            presenter.getMember(userId,groupId);
-                        }
-                    }
-                    //根据选择的类别，显示列表标题
-                    if("房间".equals(classType) || "单位".equals(classType)){
-                        //设置列表标题显示
-                        tvData1.setText("照明");
-                        tvData2.setText("插座");
-                        tvData3.setText("空调");
-                        //设置能耗总计显示
-                        tvSum1.setText("照明总用电");
-                        tvSum2.setText("插座总用电");
-                        tvSum3.setText("空调总用电");
-                    }else{
-                        //设置列表标题显示
-                        tvData1.setText("电");
-                        tvData2.setText("水");
-                        tvData3.setText("热");
-                        //设置能耗总计显示
-                        tvSum1.setText("总用电");
-                        tvSum2.setText("总用水");
-                        tvSum3.setText("总用热");
-                    }
-                    //设置能耗统计标题
-                    if(selectTime.contains("T")){
-                        String str =selectTime.replace("T","至");
-                        tvSumName.setText(str+"能耗统计");
-                    }else{
-                        tvSumName.setText(selectTime+"能耗统计");
-                    }
-                }
-            });
-        }
-    }
-
-    //类别下成员信息返回
+    //重点用能下成员列表返回
     @Override
     public void getMember(List<RoomEntity> data) {
-        if(data != null && data.size() > 0){
+        if(data != null && data.size() > 0) {
             //获取到成员列表，默认请求第一个成员的数据
             memberId = data.get(0).getId();
-            presenter.getRecord(memberId,timeType,selectTime);
+            presenter.getRecord(memberId, timeType, selectTime);
 
             //设置成员列表选择数据
             memberList.clear();
@@ -408,47 +248,29 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
-    //能耗分析数据返回
+    //能耗数据返回
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void getRecord(List<RecordEntity> data) {
-        this.data = data;
         dataList = new ArrayList<>();
         if(data != null){
             //设置列表数据
             dataList.addAll(data);
-            dataAdapter = new DataAdapter(this,dataList,classType,timeType);
-            rvData.setLayoutManager(new LinearLayoutManager(mContext));
-            rvData.setAdapter(dataAdapter);
+            adapter = new EnergyAdapter(this,dataList,timeType);
+            rvEnergy.setLayoutManager(new LinearLayoutManager(mContext));
+            rvEnergy.setAdapter(adapter);
 
-            //计算能耗统计数据， 房间、单位统计照明、插座、空调用电量，其余的统电、水、热总量
-            if("房间".equals(classType) || "单位".equals(classType)){
-                double sumLight = data.stream().mapToDouble(RecordEntity::getLight).sum();
-                double sumSocket = data.stream().mapToDouble(RecordEntity::getSocket).sum();
-                double sumAir = data.stream().mapToDouble(RecordEntity::getAir).sum();
-                tvSum1Val.setText(StringUtils.doulbeToStr(sumLight)+"kWh");
-                tvSum2Val.setText(StringUtils.doulbeToStr(sumSocket)+"kWh");
-                tvSum3Val.setText(StringUtils.doulbeToStr(sumAir)+"kWh");
-            }else{
-                double sumElec = data.stream().mapToDouble(RecordEntity::getElec).sum();
-                double sumWater = data.stream().mapToDouble(RecordEntity::getWater).sum();
-                double sumHeat = data.stream().mapToDouble(RecordEntity::getHeat).sum();
-                tvSum1Val.setText(StringUtils.doulbeToStr(sumElec)+"kWh");
-                tvSum2Val.setText(StringUtils.doulbeToStr(sumWater)+"m³");
-                tvSum3Val.setText(StringUtils.doulbeToStr(sumHeat)+"MJ");
-            }
+            //计算电、水、热总能耗
+            double sumElec = data.stream().mapToDouble(RecordEntity::getElec).sum();
+            double sumWater = data.stream().mapToDouble(RecordEntity::getWater).sum();
+            double sumHeat = data.stream().mapToDouble(RecordEntity::getHeat).sum();
+            tvSum1Val.setText(StringUtils.doulbeToStr(sumElec)+"kWh");
+            tvSum2Val.setText(StringUtils.doulbeToStr(sumWater)+"m³");
+            tvSum3Val.setText(StringUtils.doulbeToStr(sumHeat)+"MJ");
 
-            //设置条形图/饼状图
-            if(mBarChart.getVisibility() == View.VISIBLE){
-                showBarChart(data);
-            }else{
-                showPieChart(data);
-            }
+            //设置条形图
+            showBarChart(data);
         }
-    }
-
-    @Override
-    public void success(List<CarbonEntity> dataEntities) {
     }
 
     //条形图
@@ -475,55 +297,22 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
             }
             RecordEntity entity = recordEntities.get(i);
             //添加x/y轴数据
-            if("房间".equals(classType) || "单位".equals(classType)){
-                vals.add(new BarEntry((float) i, new float[]{(float) entity.getLight(), (float) entity.getSocket(), (float) entity.getAir()}));
-            }else{
-                vals.add(new BarEntry((float) i, new float[]{(float) entity.getElec(), (float) entity.getWater(), (float) entity.getHeat()}));
-            }
+            vals.add(new BarEntry((float) i, new float[]{(float) entity.getElec(), (float) entity.getWater(), (float) entity.getHeat()}));
         }
 
         BarChartManager barChartManager = new BarChartManager(mBarChart);
         String label = "";
         //根据类别类型，设置图例显示
-        String[] stackLabels;
-        if("房间".equals(classType) || "单位".equals(classType)){
-            stackLabels = new String[]{"照明","插座","空调"};
-        }else{
-            stackLabels = new String[]{"电","水","热"};
-        }
+        String[] stackLabels = new String[]{"电","水","热"};
         barChartManager.showBarChart(vals,label,stackLabels,dataList);
     }
 
-    //饼状图
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public void showPieChart(List<RecordEntity> recordEntities){
-        double sumLight = recordEntities.stream().mapToDouble(RecordEntity::getLight).sum();
-        double sumSocket = recordEntities.stream().mapToDouble(RecordEntity::getSocket).sum();
-        double sumAir = recordEntities.stream().mapToDouble(RecordEntity::getAir).sum();
+    @Override
+    public void success(List<CarbonEntity> carbonEntities) {
+    }
 
-        double sumElec = recordEntities.stream().mapToDouble(RecordEntity::getElec).sum();
-        double sumWater = recordEntities.stream().mapToDouble(RecordEntity::getWater).sum();
-        double sumHeat = recordEntities.stream().mapToDouble(RecordEntity::getHeat).sum();
-
-        //设置饼图数据
-        List<PieEntry> yvals = new ArrayList<>();
-        if("房间".equals(classType) || "单位".equals(classType)){
-            yvals.add(new PieEntry((float) sumLight,"照明"));
-            yvals.add(new PieEntry((float) sumSocket,"插座"));
-            yvals.add(new PieEntry((float) sumAir,"空调"));
-        }else{
-            yvals.add(new PieEntry((float) sumElec,"电"));
-            yvals.add(new PieEntry((float) sumWater,"水"));
-            yvals.add(new PieEntry((float) sumHeat,"热"));
-        }
-        //设置每份的颜色
-        List<Integer> colors = new ArrayList<>();
-        colors.add(getResources().getColor(R.color.color1));
-        colors.add(getResources().getColor(R.color.color2));
-        colors.add(getResources().getColor(R.color.color3));
-        //展示饼图
-        PieChartManager pieChartManager = new PieChartManager(mPieChart);
-        pieChartManager.showRingPieChart(yvals,colors,"能耗",true);
+    @Override
+    public void getGroup(List<RoomEntity> data) {
     }
 
     @Override
@@ -563,9 +352,6 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
         tvRangeTime.setVisibility(View.VISIBLE);
         tvRangeTime.setText(year + "-" + (monthOfYear + 1) + "-" + dayOfMonth +"至"+ yearEnd + "-" + (monthOfYearEnd + 1) + "-" + dayOfMonthEnd);
 
-        //设置能耗统计标题
-        tvSumName.setText(tvRangeTime.getText().toString()+"能耗统计");
-
         //重新请求统计数据
         selectTime = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth +"T"+ yearEnd + "-" + (monthOfYearEnd + 1) + "-" + dayOfMonthEnd;
         presenter.getRecord(memberId,timeType,selectTime);
@@ -597,16 +383,10 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
         timePickerView = new TimePickerBuilder(mContext, (OnTimeSelectListener) (date, v) -> {
             if(timeType == 1){
                 tvCurrentTime.setText(TimeUtils.getTime(date, "yyyy"));
-                //设置能耗统计标题
-                tvSumName.setText(TimeUtils.getTime(date,"yyyy年")+"能耗统计");
             }else if(timeType == 2){
                 tvCurrentTime.setText(TimeUtils.getTime(date, "yyyy-MM"));
-                //设置能耗统计标题
-                tvSumName.setText(TimeUtils.getTime(date,"yyyy-MM月")+"能耗统计");
             }else if(timeType == 3){
                 tvCurrentTime.setText(TimeUtils.getTime(date, "yyyy-MM-dd"));
-                //设置能耗统计标题
-                tvSumName.setText(TimeUtils.getTime(date,"yyyy-MM-dd日")+"能耗统计");
             }
             //重新请求能耗统计数据
             selectTime = tvCurrentTime.getText().toString();

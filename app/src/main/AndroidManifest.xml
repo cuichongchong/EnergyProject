@@ -44,7 +44,6 @@
             android:theme="@style/AppSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -67,6 +66,12 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.CarbonEmissionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.EnergyActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.EnergyBillActivity"
             android:screenOrientation="portrait"/>
     </application>
 

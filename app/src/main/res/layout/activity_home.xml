@@ -10,7 +10,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="44dp"
         android:minHeight="44dp"
         android:background="@color/colorAccent"
         android:title="">
@@ -18,10 +18,11 @@
             android:id="@+id/tv_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:drawablePadding="5dp"
             android:text=""
             android:textSize="16sp"
-            android:textColor="@color/colorWhite"/>
+            android:textColor="@color/colorWhite"
+            app:drawableStartCompat="@mipmap/ic_user" />
         <TextView
             android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
@@ -30,12 +31,12 @@
             android:textColor="@color/colorWhite"
             android:textSize="18sp" />
         <ImageView
-            android:id="@+id/iv_about"
+            android:id="@+id/iv_quit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:layout_marginEnd="12dp"
-            android:src="@mipmap/ic_about"/>
+            android:layout_marginEnd="10dp"
+            android:src="@mipmap/ic_quit"/>
     </androidx.appcompat.widget.Toolbar>
 
     <com.jude.rollviewpager.RollPagerView
@@ -63,7 +64,7 @@
             android:layout_weight="1"
             android:gravity="center"
             app:drawableEndCompat="@mipmap/ic_into"
-            app:drawableStartCompat="@mipmap/ic_home_control"
+            app:drawableStartCompat="@mipmap/ic_home_control1"
             android:paddingStart="30dp"
             android:paddingEnd="30dp"
             android:text="实时控制"
@@ -81,7 +82,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             app:drawableEndCompat="@mipmap/ic_into"
-            app:drawableStartCompat="@mipmap/ic_home_statis"
+            app:drawableStartCompat="@mipmap/ic_home_statis1"
             android:paddingStart="30dp"
             android:paddingEnd="30dp"
             android:layout_weight="1"
@@ -91,18 +92,19 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/view"
+        android:id="@+id/view1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@+id/ll_one"
         android:background="@color/divider_color"/>
 
     <LinearLayout
+        android:id="@+id/ll_two"
         android:layout_width="match_parent"
         android:layout_height="85dp"
         android:background="@color/colorWhite"
         android:gravity="center"
-        android:layout_below="@+id/view"
+        android:layout_below="@+id/view1"
         android:orientation="horizontal">
         <TextView
             android:id="@+id/tv_analys"
@@ -111,7 +113,7 @@
             android:layout_weight="1"
             android:gravity="center"
             app:drawableEndCompat="@mipmap/ic_into"
-            app:drawableStartCompat="@mipmap/ic_home_analys"
+            app:drawableStartCompat="@mipmap/ic_home_analys1"
             android:paddingStart="30dp"
             android:paddingEnd="30dp"
             android:text="能耗分析"
@@ -129,35 +131,100 @@
             android:layout_height="match_parent"
             android:gravity="center"
             app:drawableEndCompat="@mipmap/ic_into"
-            app:drawableStartCompat="@mipmap/ic_home_co2"
+            app:drawableStartCompat="@mipmap/ic_home_co21"
             android:paddingStart="30dp"
             android:paddingEnd="30dp"
             android:layout_weight="1"
-            android:text="碳排放量"
+            android:text="碳中和"
             android:textColor="@color/color_333333"
             android:textSize="17sp"/>
     </LinearLayout>
 
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/ll_two"
+        android:background="@color/divider_color"/>
+
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="85dp"
+        android:background="@color/colorWhite"
+        android:gravity="center"
+        android:layout_below="@+id/view2"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_energy"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            app:drawableEndCompat="@mipmap/ic_into"
+            app:drawableStartCompat="@mipmap/ic_home_energy"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="重点用能"
+            android:textColor="@color/color_333333"
+            android:textSize="17sp"/>
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/divider_color"/>
+
+        <TextView
+            android:id="@+id/tv_bill"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            app:drawableEndCompat="@mipmap/ic_into"
+            app:drawableStartCompat="@mipmap/ic_home_bill"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:layout_weight="1"
+            android:text="能耗账单"
+            android:textColor="@color/color_333333"
+            android:textSize="17sp"/>
+    </LinearLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_margin="10dp"
+        android:layout_margin="5dp"
         android:layout_marginBottom="10dp"
         android:orientation="vertical">
         <TextView
+            android:id="@+id/tv1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="友情提示:"/>
         <TextView
+            android:id="@+id/tv2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="1.如有疑问,可拨打技术服务电话."/>
+            android:layout_below="@id/tv1"
+            android:layout_marginTop="10dp"
+            android:text="1.如有疑问,可拨打技术服务电话"/>
         <TextView
+            android:id="@+id/tv3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="2.服务电话:65900786."/>
-    </LinearLayout>
+            android:layout_below="@id/tv2"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="3dp"
+            android:text="2.服务电话:"/>
+        <TextView
+            android:id="@+id/tv_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv2"
+            android:layout_toEndOf="@+id/tv3"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="3dp"
+            android:text="0371-65900786"
+            android:textColor="@color/colorAccent"/>
+    </RelativeLayout>
 </RelativeLayout>
