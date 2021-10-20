@@ -28,7 +28,7 @@ public class CarbonTreeAdapter extends BaseRecyclerViewAdapter<CarbonEntity> {
         TextView tvTree = holder.getView(R.id.tv_tree);
 
         tvName.setText(item.getMemberName());
-        tvCo2.setText(new DecimalFormat("0.00").format(item.getElec()*1.2));
-        tvTree.setText(new DecimalFormat("0").format(item.getElec()*1.2/220));
+        tvCo2.setText(new DecimalFormat("0.00").format(item.getElec()*0.997));
+        tvTree.setText(new DecimalFormat("0").format(item.getElec()*0.997/220));
     }
 }

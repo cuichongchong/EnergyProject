@@ -125,7 +125,7 @@ public class RetrofitManager {
         @POST("api/client/desktop/getInfo")
         Observable<BaseEntity<ControlEntity>> getInfo(@Body RequestBody requestBody);
 
-        //获取数据信息
+        //获取数据信息 旧接口
         @POST("api/client/analysis/getReport")
         Observable<BaseEntity<List<DataEntity>>> getReport(@Body RequestBody requestBody);
 

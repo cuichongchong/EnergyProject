@@ -435,7 +435,7 @@ public class DataActivity extends BaseActivity implements View.OnClickListener, 
                 double sumHeat = data.stream().mapToDouble(RecordEntity::getHeat).sum();
                 tvSum1Val.setText(StringUtils.doulbeToStr(sumElec)+"kWh");
                 tvSum2Val.setText(StringUtils.doulbeToStr(sumWater)+"m³");
-                tvSum3Val.setText(StringUtils.doulbeToStr(sumHeat)+"MJ");
+                tvSum3Val.setText(StringUtils.doulbeToStr(sumHeat)+"GJ");
             }
 
             //设置条形图/饼状图

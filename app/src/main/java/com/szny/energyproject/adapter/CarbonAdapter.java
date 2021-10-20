@@ -29,6 +29,6 @@ public class CarbonAdapter extends BaseRecyclerViewAdapter<CarbonEntity> {
 
         tvName.setText(item.getMemberName());
         tvEle.setText(new DecimalFormat("0.00").format(item.getElec()));
-        tvValue.setText(new DecimalFormat("0.00").format(item.getElec()*1.2));
+        tvValue.setText(new DecimalFormat("0.00").format(item.getElec()*0.997));
     }
 }
