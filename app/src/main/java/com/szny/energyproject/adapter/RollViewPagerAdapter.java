@@ -11,7 +11,7 @@ import com.jude.rollviewpager.adapter.LoopPagerAdapter;
 import java.util.List;
 
 /**
- * 副屏轮播图的适配器
+ * 首页轮播图的适配器
  * */
 public class RollViewPagerAdapter extends LoopPagerAdapter {
     private List<Integer> mlist;

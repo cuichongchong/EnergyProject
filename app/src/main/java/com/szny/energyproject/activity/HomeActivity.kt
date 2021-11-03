@@ -50,8 +50,8 @@ class HomeActivity : BaseActivity(),IHomeView, View.OnClickListener {
     private fun initView() {
         toolbar_title.text = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val tbLinearParams = toolbar.layoutParams //取控件textView当前的布局参数
-            toolbar.setPadding(0, DensityUtil.dip2px(this, 20f),                                                                 0, 0)//4个参数按顺序分别是左上右下
+            val tbLinearParams = toolbar.layoutParams //取控件toolbar当前的布局参数
+            toolbar.setPadding(0, DensityUtil.dip2px(this, 20f),0,0)//4个参数按顺序分别是左上右下
             tbLinearParams.height = DensityUtil.dip2px(this, 69f)// 控件的高
             toolbar.layoutParams = tbLinearParams //使设置好的布局参数应用到控件
         }
