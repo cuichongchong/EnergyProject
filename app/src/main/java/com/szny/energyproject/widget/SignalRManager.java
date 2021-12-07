@@ -3,6 +3,7 @@ package com.szny.energyproject.widget;
 import com.microsoft.signalr.HubConnection;
 import com.microsoft.signalr.HubConnectionBuilder;
 import com.szny.energyproject.constant.ConstantValues;
+import com.szny.energyproject.constant.UrlHelper;
 import com.szny.energyproject.entity.SupconMessage;
 import com.szny.energyproject.utils.SPUtils;
 import io.reactivex.Single;
@@ -29,9 +30,9 @@ public class SignalRManager {
     public void init(){
         new Thread(() -> {
             try {
-                String SIGNSLR_URL = "http://172.10.11.66:49315/collector";
+                String SIGNALR_URL = UrlHelper.SIGNALR_URL;
                 String token = SPUtils.getInstance().getString(ConstantValues.TOKEN,"");
-                hubConnection = HubConnectionBuilder.create(SIGNSLR_URL)
+                hubConnection = HubConnectionBuilder.create(SIGNALR_URL)
                         .withAccessTokenProvider(Single.defer(() -> {
                             // Your logic here.
                             return Single.just(token);

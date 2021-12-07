@@ -38,7 +38,7 @@ import retrofit2.http.Query;
  * 网络请求的单列存在
  */
 public class RetrofitManager {
-    private static String BASE_URL_RETROFIT = UrlHelper.BASE_URL + "/";
+    private static final String BASE_URL_RETROFIT = UrlHelper.BASE_URL + "/";
     private OkHttpClient mClient;
     private Retrofit mRetrofit;
     private InternetService mInternetService;
